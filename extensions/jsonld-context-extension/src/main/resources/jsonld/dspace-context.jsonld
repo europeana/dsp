@@ -1,4 +1,4 @@
- "@context": {
+"@context": {
     "dcat": "https://www.w3.org/ns/dcat/",
     "dct": "https://purl.org/dc/terms/",
     "odrl": "http://www.w3.org/ns/odrl/2/",
