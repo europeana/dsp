@@ -12,7 +12,7 @@
 #
 
 resources:
-  - ./dsp-common
-  - ./dsp-consumer
-  - ./dsp-provider
-  - ./dsp-issuer
+  - ./dsp-common-${ENVIRONMENT}
+  - ./dsp-consumer-${ENVIRONMENT}
+  - ./dsp-provider-${ENVIRONMENT}
+  - ./dsp-issuer-${ENVIRONMENT}

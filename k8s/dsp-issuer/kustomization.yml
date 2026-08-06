@@ -12,7 +12,10 @@
 #
 
 resources:
-  - ./dsp-common
-  - ./dsp-consumer
-  - ./dsp-provider
-  - ./dsp-issuer
+  - base/namespace.yaml
+  - base/vault.yaml
+  - base/gateway.yaml
+  - base/postgres.yaml
+  - application/issuerservice-config.yaml
+  - application/issuerservice.yaml
+  - application/issuerservice-seed-job.yaml
