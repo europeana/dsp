@@ -28,7 +28,7 @@ rootProject.name = "mvd"
 include(":tests:end2end")
 
 include(":extensions:signaling-auth-none")
-
+include(":extensions:jsonld-context-extension")
 // launcher modules
 include(":launchers:identity-hub")
 include(":launchers:controlplane")

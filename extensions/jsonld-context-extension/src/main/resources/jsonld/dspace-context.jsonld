@@ -1,0 +1,6 @@
+ "@context": {
+    "dcat": "https://www.w3.org/ns/dcat/",
+    "dct": "https://purl.org/dc/terms/",
+    "odrl": "http://www.w3.org/ns/odrl/2/",
+    "dspace": "https://w3id.org/dspace/v0.8/"
+  }
