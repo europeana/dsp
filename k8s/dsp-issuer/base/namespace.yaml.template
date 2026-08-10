@@ -11,8 +11,7 @@
 #      Metaform Systems, Inc. - initial API and implementation
 #
 
-resources:
-  - ./dsp-common
-  - ./dsp-consumer
-  - ./dsp-provider
-  - ./dsp-issuer
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dsp-issuer-${ENVIRONMENT}

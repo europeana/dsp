@@ -11,8 +11,10 @@
 #      Metaform Systems, Inc. - initial API and implementation
 #
 
-resources:
-  - ./dsp-common
-  - ./dsp-consumer
-  - ./dsp-provider
-  - ./dsp-issuer
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: traefik
+spec:
+  controllerName: traefik.io/gateway-controller
