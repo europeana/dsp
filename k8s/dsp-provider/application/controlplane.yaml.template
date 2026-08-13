@@ -104,6 +104,7 @@ spec:
   headers:
     accessControlAllowMethods:
       - "GET"
+      - "HEAD"
       - "OPTIONS"
       - "PUT"
       - "DELETE"
@@ -131,11 +132,11 @@ metadata:
   name: controlplane
   namespace: provider-${ENVIRONMENT}
 spec:
-  parentRefs: #allow both http and https
+  parentRefs:
     - name: provider-gateway
       kind: Gateway
       namespace: provider-${ENVIRONMENT}
-#      sectionName: web 
+#      sectionName: web  #allow both web and websecure
   hostnames:
     - cp.provider-${ENVIRONMENT}.localhost
     - cp-provider-${ENVIRONMENT}.${DEPLOYMENT_BASE_URL}

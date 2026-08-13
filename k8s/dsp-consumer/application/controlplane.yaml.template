@@ -101,11 +101,11 @@ spec:
   headers:
     accessControlAllowMethods:
       - "GET"
+      - "HEAD"
       - "OPTIONS"
       - "PUT"
       - "DELETE"
       - "POST"
-    #  - "*"
     accessControlAllowHeaders:
       - "*"
     #  - "Authorization"
@@ -133,7 +133,7 @@ spec:
     - name: consumer-gateway
       kind: Gateway
       namespace: consumer-${ENVIRONMENT}
-#      sectionName: web
+#      sectionName: web #allow both web and websecure
   hostnames:
     - cp.consumer-${ENVIRONMENT}.localhost
     - cp-consumer-${ENVIRONMENT}.${DEPLOYMENT_BASE_URL}
