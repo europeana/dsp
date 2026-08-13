@@ -45,22 +45,22 @@ spec:
             httpGet:
               path: /api/check/liveness
               port: 8080
-            failureThreshold: 30
-            periodSeconds: 10
+            failureThreshold: 10
+            periodSeconds: 5
             timeoutSeconds: 120
           readinessProbe:
             httpGet:
               path: /api/check/readiness
               port: 8080
-            failureThreshold: 30
-            periodSeconds: 10
+            failureThreshold: 10
+            periodSeconds: 5
             timeoutSeconds: 120
           startupProbe:
             httpGet:
               path: /api/check/startup
               port: 8080
-            failureThreshold: 30
-            periodSeconds: 10
+            failureThreshold: 10
+            periodSeconds: 5
             timeoutSeconds: 120
       restartPolicy: Always
 
@@ -95,6 +95,36 @@ spec:
       targetPort: 1044
 
 ---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: provider-cors-middleware
+  namespace: provider-${ENVIRONMENT}
+spec:
+  headers:
+    accessControlAllowMethods:
+      - "GET"
+      - "OPTIONS"
+      - "PUT"
+      - "DELETE"
+      - "POST"
+    accessControlAllowHeaders:
+      - "*"
+    #  - "Authorization"
+    #  - "Content-Type"
+    #  - "Origin"
+    #  - "Cookie"
+    #  - "x-api-key"
+    accessControlAllowOriginList:
+      - "*"
+      #- "${DSP_DASHBOARD_HOST}"
+    accessControlExposeHeaders:
+      - "*"
+    accessControlMaxAge: 3600
+    addVaryHeader: true
+
+
+---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -108,12 +138,19 @@ spec:
 #      sectionName: web 
   hostnames:
     - cp.provider-${ENVIRONMENT}.localhost
-    - cp.provider-${ENVIRONMENT}.${DEPLOYMENT_BASE_URL}
+    - cp-provider-${ENVIRONMENT}.${DEPLOYMENT_BASE_URL}
   rules:
     - matches:
         - path:
             type: PathPrefix
             value: /
+      filters:
+      #SG: apply CORS Midleware to all paths
+        - type: ExtensionRef
+          extensionRef:
+            group:  traefik.io
+            kind: Middleware
+            name: provider-cors-middleware
       backendRefs:
         - name: controlplane
           port: 8081
@@ -128,6 +165,12 @@ spec:
             path:
               type: ReplacePrefixMatch
               replacePrefixMatch: /api/mgmt     
+      #SG: apply CORS Midleware to all paths
+        - type: ExtensionRef
+          extensionRef:
+            group:  traefik.io
+            kind: Middleware
+            name: provider-cors-middleware
       backendRefs:
         - name: controlplane
           port: 8081
@@ -142,6 +185,12 @@ spec:
             path:
               type: ReplacePrefixMatch
               replacePrefixMatch: /api/dsp     
+      #SG: apply CORS Midleware to all paths
+        - type: ExtensionRef
+          extensionRef:
+            group:  traefik.io
+            kind: Middleware
+            name: provider-cors-middleware
       backendRefs:
         - name: controlplane
           port: 8082
@@ -156,6 +205,12 @@ spec:
             path:
               type: ReplacePrefixMatch
               replacePrefixMatch: /api/control     
+      #SG: apply CORS Midleware to all paths
+        - type: ExtensionRef
+          extensionRef:
+            group:  traefik.io
+            kind: Middleware
+            name: provider-cors-middleware
       backendRefs:
         - name: controlplane
           port: 8083
@@ -170,6 +225,12 @@ spec:
             path:
               type: ReplacePrefixMatch
               replacePrefixMatch: /api/signaling     
+      #SG: apply CORS Midleware to all paths
+        - type: ExtensionRef
+          extensionRef:
+            group:  traefik.io
+            kind: Middleware
+            name: provider-cors-middleware
       backendRefs:
         - name: controlplane
           port: 8182
@@ -184,13 +245,12 @@ spec:
             path:
               type: ReplacePrefixMatch
               replacePrefixMatch: /api/check/     
-      #SG: CORS Midleware
-#        - type: ExtensionRef
-#          extensionRef:
-#            group:  traefik.io
-#            kind: Middleware
-#            name: prov-edc-cors-config
-      #      name: traefik-globalcorsmiddleware@kubernetescrd
+      #SG: apply CORS Midleware to all paths
+        - type: ExtensionRef
+          extensionRef:
+            group:  traefik.io
+            kind: Middleware
+            name: provider-cors-middleware
       backendRefs:
         - name: controlplane
           port: 8080

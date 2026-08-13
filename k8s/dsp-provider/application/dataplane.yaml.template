@@ -102,7 +102,7 @@ spec:
       namespace: provider-${ENVIRONMENT}
   hostnames:
     - dp.provider-${ENVIRONMENT}.localhost
-    - dp.provider-${ENVIRONMENT}.${DEPLOYMENT_BASE_URL}
+    - dp-provider-${ENVIRONMENT}.${DEPLOYMENT_BASE_URL}
   rules:
     # /api/public → public port 11002
     - matches:

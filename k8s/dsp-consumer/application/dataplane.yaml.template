@@ -102,7 +102,7 @@ spec:
       namespace: consumer-${ENVIRONMENT}
   hostnames:
     - dp.consumer-${ENVIRONMENT}.localhost
-    - dp.consumer-${ENVIRONMENT}.${DEPLOYMENT_BASE_URL}
+    - dp-consumer-${ENVIRONMENT}.${DEPLOYMENT_BASE_URL}
   rules:
     - matches:
         - path:

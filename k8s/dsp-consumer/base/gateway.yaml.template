@@ -40,6 +40,6 @@ spec:
         mode: Terminate
         certificateRefs:    
           - kind: Secret
-            name: ${TLS_SECRET}  # present both in test and acceptance
-            namespace: ${ENVIRONMENT}
+            name: ${TLS_SECRET}
+            namespace: traefik-test
             group: ""
