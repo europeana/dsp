@@ -36,3 +36,4 @@ include(":launchers:dataplane")
 include(":launchers:issuerservice")
 
 include("extensions:catalog-metadata-extension")
+include("extensions:catalog-distribution-metadata")
