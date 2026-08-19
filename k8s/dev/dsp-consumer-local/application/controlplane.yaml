@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: controlplane
-          image: europeana_controlplane:latest
+          image: dsp-controlplane:latest
           imagePullPolicy: Always
           envFrom:
             - configMapRef: { name: controlplane-config }

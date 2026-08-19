@@ -6,7 +6,7 @@ set -e
 # Configuration
 # ============================================================
 
-DOCKER_HUB_USERNAME="${1:?Docker Hub username is required}"
+DOCKER_HUB_ORAGANISATION="${1:?Docker Hub organisation is required}"
 IMAGE_TAG="${2:-develop}"
 
 K8S_DIR="k8s/dev"
@@ -17,7 +17,7 @@ echo "========================================"
 echo "Deploying EDC DEV environment"
 echo "========================================"
 
-echo "Docker Hub username : ${DOCKER_HUB_USERNAME}"
+echo "Docker Hub Organisation : ${DOCKER_HUB_ORAGANISATION}"
 echo "Docker image tag    : ${IMAGE_TAG}"
 echo ""
 
@@ -36,8 +36,8 @@ if ! command -v kubectl >/dev/null 2>&1; then
     exit 1
 fi
 
-if [ ! -f "${K8S_DIR}/kustomization.yaml" ]; then
-    echo "ERROR: ${K8S_DIR}/kustomization.yaml not found"
+if [ ! -f "${K8S_DIR}/kustomization.yml" ]; then
+    echo "ERROR: ${K8S_DIR}/kustomization.yml not found"
     exit 1
 fi
 
@@ -50,23 +50,23 @@ echo "Preparing DEV Kubernetes configuration..."
 cp -R "${K8S_DIR}/." "${TMP_DIR}/"
 
 # ===============================================================================================================================================
-# Set Docker images dynamically. image: europeana_controlplane:latest will become DOCKER_HUB_USERNAME/europeana_controlplane:IMAGE_TAG
+# Set Docker images dynamically. image: dsp-controlplane:latest will become DOCKER_HUB_ORAGANISATION/dsp-controlplane:IMAGE_TAG
 # this is only changed at runtime and we can run with any branch we want. make sure images are deployed via jenkins job
 # =============================================================================================================================================
 
 cd "${TMP_DIR}"
 
 kustomize edit set image \
-    europeana_controlplane="${DOCKER_HUB_USERNAME}/europeana_controlplane:${IMAGE_TAG}"
+    dsp-controlplane="${DOCKER_HUB_ORAGANISATION}/dsp-controlplane:${IMAGE_TAG}"
 
 kustomize edit set image \
-    europeana_issuerservice="${DOCKER_HUB_USERNAME}/europeana_issuerservice:${IMAGE_TAG}"
+    dsp-issuerservice="${DOCKER_HUB_ORAGANISATION}/dsp-issuerservice:${IMAGE_TAG}"
 
 kustomize edit set image \
-    europeana_identity-hub="${DOCKER_HUB_USERNAME}/europeana_identity-hub:${IMAGE_TAG}"
+    dsp-identity-hub="${DOCKER_HUB_ORAGANISATION}/dsp-identity-hub:${IMAGE_TAG}"
 
 kustomize edit set image \
-    europeana_dataplane="${DOCKER_HUB_USERNAME}/europeana_dataplane:${IMAGE_TAG}"
+    dsp-dataplane="${DOCKER_HUB_ORAGANISATION}/dsp-dataplane:${IMAGE_TAG}"
 
 # ============================================================
 # Show images that will be deployed
@@ -97,7 +97,7 @@ echo "EDC DEV DEPLOYMENT COMPLETED"
 echo "========================================"
 
 echo ""
-echo "Docker Hub username : ${DOCKER_HUB_USERNAME}"
+echo "Docker Hub organisation : ${DOCKER_HUB_ORAGANISATION}"
 echo "Image tag           : ${IMAGE_TAG}"
 echo ""
 

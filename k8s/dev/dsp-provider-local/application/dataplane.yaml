@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: dataplane
-          image: europeana_dataplane:latest
+          image: dsp-dataplane:latest
           imagePullPolicy: Always
           envFrom:
             - configMapRef:

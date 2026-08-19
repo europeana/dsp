@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
         - name: issuerservice
-          image: europeana_issuerservice:latest
+          image: dsp-issuerservice:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80
