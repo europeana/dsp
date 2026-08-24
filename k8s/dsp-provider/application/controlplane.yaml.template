@@ -160,13 +160,13 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: /management
+            value: "/management"
       filters:
         - type: URLRewrite
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /api/mgmt     
+              replacePrefixMatch: "/api/mgmt"     
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
@@ -179,13 +179,13 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: /api/dsp
+            value: "/api/dsp"
       filters:
         - type: URLRewrite
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /api/dsp     
+              replacePrefixMatch: "/api/dsp"     
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
@@ -198,13 +198,13 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: /api/control
+            value: "/api/control"
       filters:
         - type: URLRewrite
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /api/control     
+              replacePrefixMatch: "/api/control"
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
@@ -217,13 +217,13 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: /api/signaling
+            value: "/api/signaling"
       filters:
         - type: URLRewrite
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /api/signaling     
+              replacePrefixMatch: "/api/signaling"     
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
@@ -236,13 +236,13 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: /api/check/
+            value: "/api/check/"
       filters:
         - type: URLRewrite
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /api/check/     
+              replacePrefixMatch: "/api/check/"     
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
