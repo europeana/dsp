@@ -95,6 +95,9 @@ spec:
       targetPort: 1044
 
 ---
+#SG: CORS MIDDLEWARE needs to be added to each HTTPRoute individually, and to be allowed for both ports, web, websecure
+#      sectionName: web #allow both web and websecure
+# 
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
@@ -136,7 +139,6 @@ spec:
     - name: provider-gateway
       kind: Gateway
       namespace: provider-${ENVIRONMENT}
-#      sectionName: web  #allow both web and websecure
   hostnames:
     - cp.provider-${ENVIRONMENT}.localhost
     - cp-provider-${ENVIRONMENT}.${DEPLOYMENT_BASE_URL}
@@ -146,7 +148,6 @@ spec:
             type: PathPrefix
             value: /
       filters:
-      #SG: apply CORS Midleware to all paths
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
@@ -166,7 +167,6 @@ spec:
             path:
               type: ReplacePrefixMatch
               replacePrefixMatch: /api/mgmt     
-      #SG: apply CORS Midleware to all paths
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
@@ -186,7 +186,6 @@ spec:
             path:
               type: ReplacePrefixMatch
               replacePrefixMatch: /api/dsp     
-      #SG: apply CORS Midleware to all paths
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
@@ -206,7 +205,6 @@ spec:
             path:
               type: ReplacePrefixMatch
               replacePrefixMatch: /api/control     
-      #SG: apply CORS Midleware to all paths
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
@@ -226,7 +224,6 @@ spec:
             path:
               type: ReplacePrefixMatch
               replacePrefixMatch: /api/signaling     
-      #SG: apply CORS Midleware to all paths
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
@@ -246,7 +243,6 @@ spec:
             path:
               type: ReplacePrefixMatch
               replacePrefixMatch: /api/check/     
-      #SG: apply CORS Midleware to all paths
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
@@ -257,6 +253,3 @@ spec:
           port: 8080
           weight: 1
    
-
-  
-  

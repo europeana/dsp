@@ -92,6 +92,9 @@ spec:
       targetPort: 1044
 
 ---
+#SG: CORS MIDDLEWARE needs to be added to each HTTPRoute individually, and to be allowed for both ports, web, websecure
+#      sectionName: web #allow both web and websecure
+# 
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
@@ -133,7 +136,6 @@ spec:
     - name: consumer-gateway
       kind: Gateway
       namespace: consumer-${ENVIRONMENT}
-#      sectionName: web #allow both web and websecure
   hostnames:
     - cp.consumer-${ENVIRONMENT}.localhost
     - cp-consumer-${ENVIRONMENT}.${DEPLOYMENT_BASE_URL}
@@ -143,7 +145,6 @@ spec:
             type: PathPrefix
             value: /
       filters:
-      #SG: apply CORS Midleware to all paths
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
@@ -156,14 +157,13 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: /management
+            value: /management/
       filters:
         - type: URLRewrite
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /api/mgmt     
-      #SG: apply CORS Midleware to all paths
+              replacePrefixMatch: /api/mgmt/
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
@@ -183,7 +183,6 @@ spec:
             path:
               type: ReplacePrefixMatch
               replacePrefixMatch: /api/check/     
-      #SG: apply CORS Midleware to all paths
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
@@ -203,8 +202,7 @@ spec:
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /api/dsp     
-      #SG: apply CORS Midleware to all paths
+              replacePrefixMatch: /api/dsp
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
@@ -224,8 +222,7 @@ spec:
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /api/control     
-      #SG: apply CORS Midleware to all paths
+              replacePrefixMatch: /api/control
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
@@ -245,8 +242,7 @@ spec:
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /api/check/     
-      #SG: apply CORS Midleware to all paths
+              replacePrefixMatch: /api/check/
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
