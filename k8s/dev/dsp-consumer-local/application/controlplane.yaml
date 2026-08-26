@@ -45,23 +45,23 @@ spec:
             httpGet:
               path: /api/check/liveness
               port: 8080
-            failureThreshold: 10
+            failureThreshold: 30
             periodSeconds: 5
-            timeoutSeconds: 120
+            timeoutSeconds: 150
           readinessProbe:
             httpGet:
               path: /api/check/readiness
               port: 8080
-            failureThreshold: 10
+            failureThreshold: 30
             periodSeconds: 5
-            timeoutSeconds: 120
+            timeoutSeconds: 150
           startupProbe:
             httpGet:
               path: /api/check/startup
               port: 8080
-            failureThreshold: 10
+            failureThreshold: 30
             periodSeconds: 5
-            timeoutSeconds: 120
+            timeoutSeconds: 150
       restartPolicy: Always
 
 ---
