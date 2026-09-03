@@ -1,0 +1,15 @@
+{
+  "@type": "http://www.w3.org/ns/dcat#Distribution",
+  "http://purl.org/dc/terms/format": "HttpData-PULL",
+  "dcat:mediaType": {
+    "@id": "https://www.iana.org/assignments/media-types/application/rdf+xml"
+  },
+  "dct:title": "RDF/XML ZIP distribution",
+  "dcat:packagingFormat": {
+    "@id": "https://www.iana.org/assignments/media-types/application/zip"
+  },
+  "dct:identifier": {
+    "@id": "https://www.europeana.eu/portal/record/223456789/data.zip"
+  },
+  "dct:description": "A ZIP archive containing RDF/XML files."
+}

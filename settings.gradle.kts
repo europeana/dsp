@@ -34,3 +34,5 @@ include(":launchers:identity-hub")
 include(":launchers:controlplane")
 include(":launchers:dataplane")
 include(":launchers:issuerservice")
+
+include("extensions:catalog-metadata-extension")
