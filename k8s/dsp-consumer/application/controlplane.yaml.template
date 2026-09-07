@@ -92,6 +92,9 @@ spec:
       targetPort: 1044
 
 ---
+#SG: CORS MIDDLEWARE needs to be added to each HTTPRoute individually, and to be allowed for both ports, web, websecure
+#      sectionName: web #allow both web and websecure
+# 
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
@@ -101,11 +104,11 @@ spec:
   headers:
     accessControlAllowMethods:
       - "GET"
+      - "HEAD"
       - "OPTIONS"
       - "PUT"
       - "DELETE"
       - "POST"
-    #  - "*"
     accessControlAllowHeaders:
       - "*"
     #  - "Authorization"
@@ -133,7 +136,6 @@ spec:
     - name: consumer-gateway
       kind: Gateway
       namespace: consumer-${ENVIRONMENT}
-#      sectionName: web
   hostnames:
     - cp.consumer-${ENVIRONMENT}.localhost
     - cp-consumer-${ENVIRONMENT}.${DEPLOYMENT_BASE_URL}
@@ -141,9 +143,13 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: /
+            value: "/management/"
       filters:
-      #SG: apply CORS Midleware to all paths
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: "/api/mgmt/"
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
@@ -156,14 +162,13 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: /management
+            value: "/api/mgmt/"
       filters:
         - type: URLRewrite
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /api/mgmt     
-      #SG: apply CORS Midleware to all paths
+              replacePrefixMatch: "/api/mgmt/"
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
@@ -176,35 +181,13 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: /api/check/
+            value: "/api/dsp/"
       filters:
         - type: URLRewrite
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /api/check/     
-      #SG: apply CORS Midleware to all paths
-        - type: ExtensionRef
-          extensionRef:
-            group:  traefik.io
-            kind: Middleware
-            name: consumer-cors-middleware
-      backendRefs:
-        - name: controlplane
-          port: 8080
-          weight: 1
-     
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /api/dsp
-      filters:
-        - type: URLRewrite
-          urlRewrite:
-            path:
-              type: ReplacePrefixMatch
-              replacePrefixMatch: /api/dsp     
-      #SG: apply CORS Midleware to all paths
+              replacePrefixMatch: "/api/dsp/"
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
@@ -214,18 +197,16 @@ spec:
         - name: controlplane
           port: 8082
           weight: 1
-     
     - matches:
         - path:
             type: PathPrefix
-            value: /api/control
+            value: "/api/control"
       filters:
         - type: URLRewrite
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /api/control     
-      #SG: apply CORS Midleware to all paths
+              replacePrefixMatch: "/api/control"
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
@@ -235,18 +216,16 @@ spec:
         - name: controlplane
           port: 8083
           weight: 1
- 
     - matches:
         - path:
             type: PathPrefix
-            value: /api/check/
+            value: "/api/check/"
       filters:
         - type: URLRewrite
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /api/check/     
-      #SG: apply CORS Midleware to all paths
+              replacePrefixMatch: "/api/check/"     
         - type: ExtensionRef
           extensionRef:
             group:  traefik.io
@@ -256,4 +235,20 @@ spec:
         - name: controlplane
           port: 8080
           weight: 1
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group:  traefik.io
+            kind: Middleware
+            name: consumer-cors-middleware
+      backendRefs:
+        - name: controlplane
+          port: 8081
+          weight: 1
+    
+ 
  

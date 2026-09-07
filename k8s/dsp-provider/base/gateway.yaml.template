@@ -26,9 +26,6 @@ spec:
       allowedRoutes:
         namespaces:
           from: All  #or Same or Selector
-#        kinds:
-#          - kind: HTTPRoute
-#            group: gateway.networking.k8s.io
     - name: websecure
       protocol: HTTPS
       port: 443
