@@ -22,4 +22,6 @@ dependencies {
     api(libs.edc.spi.transform)
     api(libs.edc.ext.jsonld)
     api(libs.edc.controlplane.catalog)
+    api(libs.edc.controlplane.core)
+    api((libs.edc.controlplane.transaction.spi))
 }

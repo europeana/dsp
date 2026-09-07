@@ -11,8 +11,6 @@ import org.eclipse.edc.transform.spi.TransformerContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.net.URI;
-import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.TYPE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_ACCESS_SERVICE_ATTRIBUTE;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCAT_DISTRIBUTION_TYPE;
@@ -32,6 +30,7 @@ public class JsonObjectFromEuropeanaDcatDistributionTransformer
         extends AbstractJsonLdTransformer<EuropeanaDcatDistribution, JsonObject> {
 
     private final JsonBuilderFactory jsonFactory;
+    private static final String CONTEXT = "https://w3id.org/dspace/context.jsonld";
 
     public JsonObjectFromEuropeanaDcatDistributionTransformer(JsonBuilderFactory jsonFactory) {
         super(EuropeanaDcatDistribution.class, JsonObject.class);
@@ -44,6 +43,7 @@ public class JsonObjectFromEuropeanaDcatDistributionTransformer
             @NotNull TransformerContext context) {
 
         var builder = jsonFactory.createObjectBuilder()
+                .add("@context", CONTEXT)
                 .add(TYPE, DCAT_DISTRIBUTION_TYPE);
 
        // EDC Distribution.format. EDC's format is serialized as dct:format.
@@ -81,14 +81,7 @@ public class JsonObjectFromEuropeanaDcatDistributionTransformer
             return;
         }
         // already serialized
-        if ("dct:format".equals(property)) {
-            return;
-        }
-
-        if (isUri(value)) {
-            builder.add(property, jsonFactory.createObjectBuilder()
-                    .add(ID, value.toString())
-                    .build());
+        if ("dct:format".equals(property) || "format".equals(property)) {
             return;
         }
 
@@ -105,19 +98,7 @@ public class JsonObjectFromEuropeanaDcatDistributionTransformer
         } else if (value instanceof JsonObject jsonObject) {
             builder.add(property, jsonObject);
         } else {
-            builder.add(property, value.toString()); // fallback
-        }
-    }
-
-    private boolean isUri(Object value) {
-        if (!(value instanceof String s)) {
-            return false;
-        }
-
-        try {
-            return URI.create(s).isAbsolute();
-        } catch (IllegalArgumentException e) {
-            return false;
+            builder.add(property, value.toString());
         }
     }
 }

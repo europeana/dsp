@@ -29,14 +29,15 @@ public class JsonObjectFromEuropeanaDcatDistributionTransformerTest {
         transformer = new JsonObjectFromEuropeanaDcatDistributionTransformer(jsonFactory);
 
         Map<String, Object> properties = Map.of(
-                "dct:title", "RDF/XML ZIP distribution",
-                "dct:description", "A ZIP archive containing RDF/XML files.",
-                "dcat:mediaType",
+                "title", "RDF/XML ZIP distribution",
+                "description", "A ZIP archive containing RDF/XML files.",
+                "mediaType",
                 "https://www.iana.org/assignments/media-types/application/rdf+xml",
-                "dcat:packagingFormat",
+                "packagingFormat",
                 "https://www.iana.org/assignments/media-types/application/zip",
-                "dct:format", "HttpData-PULL",
-                "dct:identifier", "https://www.europeana.eu/portal/record/223456789/data.zip"
+                "format", "HttpData-PULL",
+                "identifier",
+                "https://www.europeana.eu/portal/record/223456789/data.zip"
         );
 
         distribution = new EuropeanaDcatDistribution("1", properties);

@@ -97,7 +97,7 @@ public class EuropeanaDistributionResolver extends DefaultDistributionResolver {
                 EuropeanaDcatDistribution distribution = buildDistribution(properties, String.valueOf(i));
 
                 distribution.setDataService(dataService);
-                var format = distribution.getProperties().get("dct:format");
+                var format = distribution.getProperties().get("format");
                 distribution.setFormat(String.valueOf(format));
                 distributions.add(distribution);
 

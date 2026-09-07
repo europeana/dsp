@@ -12,4 +12,5 @@
 #
 #
 
-eu.europeana.dsp.connector.controlplane.catalog.spi.EuropeanaDcatTransformerExtension
+eu.europeana.dsp.connector.controlplane.catalog.spi.extension.EuropeanaDcatTransformerExtension
+eu.europeana.dsp.connector.controlplane.catalog.spi.extension.EuropeanaCatalogProtocolServiceExtension
