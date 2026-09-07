@@ -1,0 +1,103 @@
+#
+# Copyright (c) 2025 Metaform Systems, Inc.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License, Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+# Contributors:
+#      Metaform Systems, Inc. - initial API and implementation
+#
+# on some bare-metal installations, we need special privileges to run traefik on port 80. If traefik reports an error try
+# uncommenting the following lines.
+deployment:
+  podSecurityContext:
+    runAsNonRoot: false
+
+#SG: must create different classes for each installation
+ingressClass:  # @schema additionalProperties: false
+# -- Create a default IngressClass for Traefik
+  enabled: true
+  isDefaultClass: false
+  name: "traefik-test"
+  #
+securityContext:
+  runAsNonRoot: false
+  runAsUser: 0
+  capabilities:
+    drop: []
+    #end security
+# we disable gateway-api defaults because we want to provide our own 
+gateway:
+  enabled: false
+
+# we disable gateway-api defaults because we want to provide our own
+gatewayClass:
+  enabled: false
+  
+  
+# disable dashboard
+#SG ENABLE Dashboard API
+api:  # @schema additionalProperties: false
+  # -- Enable the dashboard
+  dashboard: false
+  # -- Enable the insecure API (HTTP)
+  insecure: true # @schema type:[boolean, null]
+  # -- Enable the debug API
+  debug:  true # @schema type:[boolean, null]
+  # -- Configure API basePath
+  #basePath: ""  # @schema type:[string, null]; default: "/"
+  
+# providers
+# we enable gateway-api features
+providers:
+  kubernetesGateway:
+    enabled: true
+    experimentalChannel: true
+  kubernetesCRD:
+    # -- Load Kubernetes IngressRoute provider
+    enabled: true
+    # -- Allows IngressRoute to reference resources in namespace other than theirs
+    allowCrossNamespace: true
+    # -- Allows to reference ExternalName services in IngressRoute
+    allowExternalNameServices: true
+    # -- Allows to return 503 when there are no endpoints available
+    allowEmptyServices: true
+  
+
+ports:
+  web:
+    port: 8000
+    # hostPort: 8000
+    # containerPort: 8000
+  websecure:
+    port: 443
+    exposedPort: 443
+  traefik:
+    port: 8080
+    expose: 
+      default: true
+    exposedPort: 8080
+    protocol: TCP
+      
+
+
+# logs 
+#SG see default configs: https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml
+log:
+  level: DEBUG
+accessLog:
+  enabled: true
+  format: json
+  fields:
+    # full field list
+    # https://doc.traefik.io/traefik/reference/install-configuration/observability/logs-and-accesslogs/#json-format-fields
+    defaultmode: keep
+    names:
+      RouterName: keep
+      ServiceName: keep
+    headers:
+      # -- [Limit logged fields or headers](https://doc.traefik.io/traefik/observability/access-logs/#limiting-the-fieldsincluding-headers)
+      defaultmode: keep

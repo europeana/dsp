@@ -1,6 +1,8 @@
 #!/bin/bash
+##SG: MAKE SURE To KEEP the linux 
 
 set -euo pipefail
+
 
 # ============================================================
 # Configuration
