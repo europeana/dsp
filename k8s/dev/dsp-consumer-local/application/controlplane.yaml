@@ -84,6 +84,9 @@ spec:
     - name: protocol
       port: 8082
       targetPort: 8082
+    - name: control
+      port: 8083
+      targetPort: 8083
     - name: debug
       port: 1044
       targetPort: 1044
@@ -102,11 +105,96 @@ spec:
   hostnames:
     - cp.consumer.localhost
   rules:
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /
-      backendRefs:
-        - name: controlplane
-          port: 8081
-          weight: 1
+   - matches:
+       - path:
+           type: PathPrefix
+           value: /
+     filters:
+     backendRefs:
+       - name: controlplane
+         port: 8081
+         weight: 1
+   - matches:
+       - path:
+           type: PathPrefix
+           value: "/management"
+     filters:
+       - type: URLRewrite
+         urlRewrite:
+           path:
+             type: ReplacePrefixMatch
+             replacePrefixMatch: "/api/mgmt"
+     backendRefs:
+       - name: controlplane
+         port: 8081
+         weight: 1
+   - matches:
+       - path:
+           type: PathPrefix
+           value: "/api/mgmt"
+     filters:
+       - type: URLRewrite
+         urlRewrite:
+           path:
+             type: ReplacePrefixMatch
+             replacePrefixMatch: "/api/mgmt"
+     backendRefs:
+       - name: controlplane
+         port: 8081
+         weight: 1
+   - matches:
+       - path:
+           type: PathPrefix
+           value: "/api/check/"
+     filters:
+       - type: URLRewrite
+         urlRewrite:
+           path:
+             type: ReplacePrefixMatch
+             replacePrefixMatch: "/api/check/"
+     backendRefs:
+       - name: controlplane
+         port: 8080
+         weight: 1
+   - matches:
+       - path:
+           type: PathPrefix
+           value: "/api/dsp"
+     filters:
+       - type: URLRewrite
+         urlRewrite:
+           path:
+             type: ReplacePrefixMatch
+             replacePrefixMatch: "/api/dsp"
+     backendRefs:
+       - name: controlplane
+         port: 8082
+         weight: 1
+   - matches:
+       - path:
+           type: PathPrefix
+           value: "/api/control"
+     filters:
+       - type: URLRewrite
+         urlRewrite:
+           path:
+             type: ReplacePrefixMatch
+             replacePrefixMatch: "/api/control"
+     backendRefs:
+       - name: controlplane
+         port: 8083
+         weight: 1
+   - matches:
+       - path:
+           type: PathPrefix
+           value: "/api/check/"
+     filters:
+       - type: URLRewrite
+         urlRewrite:
+           path:
+             type: ReplacePrefixMatch
+             replacePrefixMatch: "/api/check/"
+     backendRefs:
+       - name: controlplane
+         port: 8080
+         weight: 1

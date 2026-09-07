@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
         - name: vault
-          image: hashicorp/vault:latest
+          image: hashicorp/vault:2.0.0
           ports:
             - containerPort: 8200
 
@@ -70,7 +70,7 @@ spec:
       serviceAccountName: vault-auth
       containers:
         - name: vault-cli
-          image: hashicorp/vault:latest
+          image: hashicorp/vault:2.0.0
           env:
             - name: VAULT_ADDR
               value: "http://vault.provider.svc.cluster.local:8200"

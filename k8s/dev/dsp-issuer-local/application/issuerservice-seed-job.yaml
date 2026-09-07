@@ -36,7 +36,7 @@ spec:
       initContainers:
         # Wait for issuerservice to be ready
         - name: wait-for-issuerservice
-          image: curlimages/curl:latest
+          image: curlimages/curl:8.20.0
           command:
             - sh
             - -c
@@ -57,7 +57,7 @@ spec:
               echo "Keycloak is ready!"
       containers:
         - name: seed-issuerservice
-          image: curlimages/curl:latest
+          image: curlimages/curl:8.20.0
           env:
             - name: KC_HOST
               value: "http://keycloak.mvd-common.svc.cluster.local:8080"
@@ -317,7 +317,7 @@ spec:
                     }
                   ],
                   "rules": [],
-                  "format": "vc20-bssl/jwt",
+                  "format": "VC2_0_JOSE",
                   "validity": "604800"
                 }'
 

@@ -106,6 +106,16 @@ echo "========================================"
 
 kubectl apply -k .
 
+# wait for all init jobs to have completed
+kubectl wait -A \
+  --selector=type=edc-job \
+  --for=condition=complete job --all \
+  --timeout=90s
+  
+#forward port localhost:80 to traefik   
+kubectl port-forward svc/traefik 80:80 -n traefik
+
+
 # ============================================================
 # Restart deployments to use newly built local images
 # ============================================================
@@ -228,3 +238,5 @@ echo "========================================"
 echo ""
 echo "Image tag: ${IMAGE_TAG}"
 echo ""
+
+

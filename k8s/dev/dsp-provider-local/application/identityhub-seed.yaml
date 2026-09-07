@@ -33,7 +33,7 @@ spec:
       restartPolicy: OnFailure
       initContainers:
         - name: wait-for-dependencies
-          image: curlimages/curl:latest
+          image: curlimages/curl:8.20.0
           env:
             - name: KC_HOST
               value: "http://keycloak.mvd-common.svc.cluster.local:8080"
@@ -66,7 +66,7 @@ spec:
       containers:
 
         - name: seed-identityhub
-          image: curlimages/curl:latest
+          image: curlimages/curl:8.20.0
           env:
               - name: KC_HOST
                 value: "http://keycloak.mvd-common.svc.cluster.local:8080"
