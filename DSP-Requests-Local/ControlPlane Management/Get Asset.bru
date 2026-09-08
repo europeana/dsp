@@ -1,0 +1,31 @@
+meta {
+  name: Get Asset
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{PROVIDER_CP}}/api/mgmt/v4/assets/europeana-asset-1
+  body: json
+  auth: inherit
+}
+
+body:text {
+  {
+      "@context": {
+          "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+      },
+      "@type": "QuerySpec"
+  }
+}
+
+script:post-response {
+  test("Status code is >=200 and <300", function () {
+      expect(res.getStatus() < 300 && res.getStatus() >= 200).to.be.true
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
