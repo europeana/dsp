@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "DSP",
+  "name": "DSP-Local",
   "type": "collection",
   "ignore": [
     "node_modules",
