@@ -32,3 +32,5 @@ helm upgrade --install \
     --set image.tag="v3.7.5" \
     -f ./values-local.yaml \
     traefik traefik/traefik
+    
+kubectl rollout status deployment/traefik -n traefik --timeout=900s
