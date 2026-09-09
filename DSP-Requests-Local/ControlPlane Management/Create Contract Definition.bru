@@ -1,0 +1,55 @@
+meta {
+  name: Create Contract Definition
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{PROVIDER_CP}}/api/mgmt/v4/contractdefinitions
+  body: json
+  auth: inherit
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "@context": [
+      "https://w3id.org/edc/connector/management/v2"
+    ],
+    "@id": "europeana-asset1-contractdef",
+    "@type": "ContractDefinition",
+    "accessPolicyId": "require-membership",
+    "contractPolicyId": "require-manufacturer",
+    "assetsSelector": {
+      "@type": "Criterion",
+      "operandLeft": "https://w3id.org/edc/v0.0.1/ns/id",
+      "operator": "=",
+      "operandRight": "europeana-asset-1"
+    },
+    "privateProperties":"{\"title\": \"Contract for Europeana Asset 1\", \"description\": \"Contract definition for accessing the asset with the id:europeana-asset-1\"}"
+  }
+}
+
+body:text {
+  {
+      "@context": {
+          "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+      },
+      "@type": "QuerySpec"
+  }
+}
+
+script:post-response {
+  test("Status code is >=200 and <300", function () {
+      expect(res.getStatus() < 300 && res.getStatus() >= 200).to.be.true
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
