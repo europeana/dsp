@@ -35,6 +35,8 @@ edc-api-dsp-config = { module = "org.eclipse.edc:dsp-http-api-configuration-2025
 edc-dcp = { module = "org.eclipse.edc:decentralized-claims-service", version.ref = "edc" }
 edc-controlplane-core = { module = "org.eclipse.edc:control-plane-core", version.ref = "edc" }
 edc-controlplane-transform = { module = "org.eclipse.edc:control-plane-transform", version.ref = "edc" }
+edc-controlplane-transaction-spi ={module = "org.eclipse.edc:transaction-spi", version.ref = "edc"}
+edc-controlplane-catalog = { module = "org.eclipse.edc:control-plane-catalog", version.ref = "edc" }
 edc-controlplane-services = { module = "org.eclipse.edc:control-plane-aggregate-services", version.ref = "edc" }
 edc-api-management-config = { module = "org.eclipse.edc:management-api-configuration", version.ref = "edc" }
 edc-api-management = { module = "org.eclipse.edc:management-api", version.ref = "edc" }
