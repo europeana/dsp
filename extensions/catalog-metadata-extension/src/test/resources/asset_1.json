@@ -1,0 +1,22 @@
+{
+  "id": "asset-123",
+  "properties": {
+    "dct:title": "Dataset 22",
+    "dct:description": "A provider dataset distributed as ZIP files."
+  },
+  "dataAddress": {
+    "type": "EuropeanaDataAddress",
+    "properties": {
+      "distribution.1.dct:title": "RDF/XML ZIP distribution",
+      "distribution.1.dct:description": "A ZIP archive containing RDF/XML files.",
+      "distribution.1.dcat:mediaType": "https://www.iana.org/assignments/media-types/application/rdf+xml",
+      "distribution.1.dcat:packagingFormat": "https://www.iana.org/assignments/media-types/application/zip",
+      "distribution.1.dct:format": "HttpData-PULL",
+
+      "distribution.2.dct:title": "CSV distribution",
+      "distribution.2.dct:description": "A CSV representation of the dataset.",
+      "distribution.2.dcat:mediaType": "https://www.iana.org/assignments/media-types/text/csv",
+      "distribution.2.dct:format": "HttpData-PULL"
+    }
+  }
+}
