@@ -1,1 +1,11 @@
-
+{
+  "@context": {
+    "edm": "http://www.europeana.eu/schemas/edm/",
+    "dcat": "https://www.w3.org/ns/dcat/",
+    "dc": "http://purl.org/dc/elements/1.1/",
+    "dct": "https://purl.org/dc/terms/",
+    "odrl": "http://www.w3.org/ns/odrl/2/",
+    "dspace": "https://w3id.org/dspace/v0.8/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  }
+}
