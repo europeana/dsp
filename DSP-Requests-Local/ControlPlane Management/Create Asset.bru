@@ -1,0 +1,50 @@
+meta {
+  name: Create Asset
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{PROVIDER_CP}}/api/mgmt/v4/assets
+  body: json
+  auth: inherit
+}
+
+headers {
+  Accept: application/json
+}
+
+body:json {
+  {
+    "@context": [
+      "https://w3id.org/edc/connector/management/v2"
+    ],
+    "@id": "europeana-asset-1",
+    "@type": "Asset",
+    "properties": {
+      "title": "The first Europeana test Asset",
+      "description": "This asset requires Membership to view and Manufacturer (part_types=non_critical) to negotiate."
+      
+    }
+  }
+}
+
+body:text {
+  {
+      "@context": {
+          "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+      },
+      "@type": "QuerySpec"
+  }
+}
+
+script:post-response {
+  test("Status code is >=200 and <300", function () {
+      expect(res.getStatus() < 300 && res.getStatus() >= 200).to.be.true
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
