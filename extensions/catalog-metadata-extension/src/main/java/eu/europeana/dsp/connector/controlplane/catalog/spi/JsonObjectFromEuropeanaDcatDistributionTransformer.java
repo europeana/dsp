@@ -4,10 +4,8 @@ import eu.europeana.dsp.connector.controlplane.catalog.spi.definitions.Europeana
 import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
-
 import org.eclipse.edc.jsonld.spi.transformer.AbstractJsonLdTransformer;
 import org.eclipse.edc.transform.spi.TransformerContext;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,6 +19,7 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCT_FORMAT_ATTRIBU
  * preserving key metadata and properties specific to the Europeana and DCAT contexts.
  * This transformation is performed using a {@link JsonBuilderFactory} instance to construct the JSON.
  * We are overriding the default implementation of the JsonObjectFromDistributionTransformer.
+ *
  * @link : https://github.com/eclipse-edc/Connector/blob/f1a5b8202cfdd7ebb28edd482210b13e74e57b9e/data-protocols/dsp/dsp-lib/src/main/java/org/eclipse/edc/protocol/dsp/catalog/transform/from/JsonObjectFromDistributionTransformer.java
  *
  * @author Srishti Singh
@@ -30,11 +29,13 @@ public class JsonObjectFromEuropeanaDcatDistributionTransformer
         extends AbstractJsonLdTransformer<EuropeanaDcatDistribution, JsonObject> {
 
     private final JsonBuilderFactory jsonFactory;
-    private static final String CONTEXT = "https://w3id.org/dspace/context.jsonld";
+    // has the @Vocab set default as dct
+    private static final String CONTEXT = "https://api.test.eanadev.org/context/catalog.jsonld";
 
     public JsonObjectFromEuropeanaDcatDistributionTransformer(JsonBuilderFactory jsonFactory) {
         super(EuropeanaDcatDistribution.class, JsonObject.class);
         this.jsonFactory = jsonFactory;
+        System.out.println(">>> JsonObjectFromEuropeanaDcatDistributionTransformer created ... !!");
     }
 
     @Override

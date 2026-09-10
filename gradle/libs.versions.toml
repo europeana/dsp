@@ -14,6 +14,7 @@ postgres = "42.7.11"
 restAssured = "6.0.0"
 rsApi = "4.0.0"
 swagger = "2.2.50"
+commons-lang3 = "3.18.0"
 
 [libraries]
 # upstream EDC dependencies
@@ -129,6 +130,7 @@ edc-bom-identityhub-sql = { module = "org.eclipse.edc:identityhub-feature-sql-bo
 edc-bom-issuerservice = { module = "org.eclipse.edc:issuerservice-oauth2-bom", version.ref = "edc" }
 edc-bom-issuerservice-sql = { module = "org.eclipse.edc:issuerservice-feature-sql-bom", version.ref = "edc" }
 
+commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang3" }
 [bundles]
 
 [plugins]

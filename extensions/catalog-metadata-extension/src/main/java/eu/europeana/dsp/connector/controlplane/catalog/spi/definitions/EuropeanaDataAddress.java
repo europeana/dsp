@@ -3,6 +3,7 @@ package eu.europeana.dsp.connector.controlplane.catalog.spi.definitions;
 import eu.europeana.dsp.connector.controlplane.catalog.spi.Resource;
 import eu.europeana.dsp.connector.controlplane.catalog.spi.ResourceDescriptionProvider;
 import org.eclipse.edc.spi.types.domain.DataAddress;
+
 import java.util.Map;
 
 /**

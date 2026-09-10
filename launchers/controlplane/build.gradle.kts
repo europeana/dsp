@@ -21,6 +21,7 @@ plugins {
 dependencies {
     runtimeOnly(project(":extensions:signaling-auth-none"))
     runtimeOnly(project(":extensions:jsonld-context-extension"))
+    runtimeOnly(project(":extensions:catalog-metadata-extension"))
     runtimeOnly(libs.edc.api.cel.v5)
     runtimeOnly(libs.edc.core.cel)
     runtimeOnly(libs.edc.decentralized.claims.cel)

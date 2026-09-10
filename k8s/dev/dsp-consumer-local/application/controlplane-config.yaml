@@ -77,3 +77,6 @@ data:
   edc.catalog.title: "Europeana Dataset Catalog"
   edc.catalog.description: "Europeana datasets available through DSP"
   edc.catalog.publisher: "Europeana Foundation"
+
+  edc.jsonld.https.enabled: "true"
+  edc.jsonld.http.enabled: "true"

@@ -12,6 +12,7 @@ import java.util.Map;
 /**
  * Unit test class for validating the functionality of the {@code DistributionMetadataExtractor} class
  * and its ability to extract and construct metadata properties into {@code EuropeanaDcatDistribution} objects.
+ *
  * @author Srishti singh
  * @since 2026-09-2
  */
@@ -27,29 +28,33 @@ public class DistributionMetadataExtractorTest {
 
     @BeforeAll
     static void init() {
-        properties.put("distribution.1.dct:title", DISTRIBUTION_1_TITLE);
-        properties.put("distribution.1.dct:description", DISTRIBUTION_1_DESCRIPTION);
-        properties.put("distribution.1.dcat:mediaType", "https,//www.iana.org/assignments/media-types/application/rdf+xml");
-        properties.put("distribution.1.dcat:packagingFormat", "https,//www.iana.org/assignments/media-types/application/zip");
-        properties.put("distribution.1.dct:format", DISTRIBUTION_FORMAT);
+        properties.put("distribution.1.title", DISTRIBUTION_1_TITLE);
+        properties.put("distribution.1.description", DISTRIBUTION_1_DESCRIPTION);
+        properties.put("distribution.1.mediaType", "https,//www.iana.org/assignments/media-types/application/rdf+xml");
+        properties.put("distribution.1.packagingFormat", "https,//www.iana.org/assignments/media-types/application/zip");
+        properties.put("distribution.1.format", DISTRIBUTION_FORMAT);
 
-        properties.put("distribution.2.dct:title",DISTRIBUTION_2_TITLE);
-        properties.put("distribution.2.dct:description", DISTRIBUTION_2_DESCRIPTION);
-        properties.put("distribution.2.dcat:mediaType","https,//www.iana.org/assignments/media-types/text/csv");
-        properties.put("distribution.2.dct:format", DISTRIBUTION_FORMAT)  ;
+        properties.put("https://w3id.org/edc/v0.0.1/ns/distribution.2.title", DISTRIBUTION_2_TITLE);
+        properties.put("https://w3id.org/edc/v0.0.1/ns/distribution.2.description", DISTRIBUTION_2_DESCRIPTION);
+        properties.put("https://w3id.org/edc/v0.0.1/ns/distribution.2.mediaType", "https://www.iana.org/assignments/media-types/text/csv");
+        properties.put("https://w3id.org/edc/v0.0.1/ns/distribution.2.format", DISTRIBUTION_FORMAT);
     }
 
+    @Test
+    void testDistributionCount() {
+        Assertions.assertEquals(2, DistributionMetadataExtractor.getDistributionCount(properties));
+    }
     @Test
     public void testDistribution1() {
         EuropeanaDcatDistribution distribution = DistributionMetadataExtractor.buildDistribution(
                 properties, "1");
         Assertions.assertNotNull(distribution);
         Map<String, Object> distributionProperties = distribution.getProperties();
-        Assertions.assertEquals(DISTRIBUTION_1_TITLE, distributionProperties.get("dct:title"));
-        Assertions.assertEquals(DISTRIBUTION_1_DESCRIPTION, distributionProperties.get("dct:description"));
-        Assertions.assertNotNull(distributionProperties.get("dcat:mediaType"));
-        Assertions.assertNotNull(distributionProperties.get("dcat:packagingFormat"));
-        Assertions.assertEquals(DISTRIBUTION_FORMAT, distributionProperties.get("dct:format"));
+        Assertions.assertEquals(DISTRIBUTION_1_TITLE, distributionProperties.get("title"));
+        Assertions.assertEquals(DISTRIBUTION_1_DESCRIPTION, distributionProperties.get("description"));
+        Assertions.assertNotNull(distributionProperties.get("mediaType"));
+        Assertions.assertNotNull(distributionProperties.get("packagingFormat"));
+        Assertions.assertEquals(DISTRIBUTION_FORMAT, distributionProperties.get("format"));
     }
 
     @Test
@@ -58,9 +63,9 @@ public class DistributionMetadataExtractorTest {
                 properties, "2");
         Assertions.assertNotNull(distribution);
         Map<String, Object> distributionProperties = distribution.getProperties();
-        Assertions.assertEquals(DISTRIBUTION_2_TITLE, distributionProperties.get("dct:title"));
-        Assertions.assertEquals(DISTRIBUTION_2_DESCRIPTION, distributionProperties.get("dct:description"));
-        Assertions.assertNotNull(distributionProperties.get("dcat:mediaType"));
-        Assertions.assertEquals(DISTRIBUTION_FORMAT, distributionProperties.get("dct:format"));
+        Assertions.assertEquals(DISTRIBUTION_2_TITLE, distributionProperties.get("title"));
+        Assertions.assertEquals(DISTRIBUTION_2_DESCRIPTION, distributionProperties.get("description"));
+        Assertions.assertNotNull(distributionProperties.get("mediaType"));
+        Assertions.assertEquals(DISTRIBUTION_FORMAT, distributionProperties.get("format"));
     }
 }

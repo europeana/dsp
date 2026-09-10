@@ -10,26 +10,26 @@ import java.io.InputStream;
 
 public class TestUtils {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private static InputStream getInputStream(String resourceName) {
         InputStream inputStream = Asset.class.getClassLoader().getResourceAsStream(resourceName);
 
         if (inputStream == null) {
-            throw new IllegalArgumentException("Resource not found:"+resourceName);
+            throw new IllegalArgumentException("Resource not found:" + resourceName);
         }
         return inputStream;
     }
 
     public static Asset loadAsset(String resourceName) throws IOException {
-        return objectMapper.readValue(getInputStream(resourceName), Asset.class);
+        return OBJECT_MAPPER.readValue(getInputStream(resourceName), Asset.class);
     }
 
     public static JsonNode loadJson(String resourceName) throws IOException {
-        return objectMapper.readTree(getInputStream(resourceName));
+        return OBJECT_MAPPER.readTree(getInputStream(resourceName));
     }
 
     public static JsonNode loadJson(JsonObject jsonObject) throws IOException {
-        return objectMapper.readTree(jsonObject.toString());
+        return OBJECT_MAPPER.readTree(jsonObject.toString());
     }
 }

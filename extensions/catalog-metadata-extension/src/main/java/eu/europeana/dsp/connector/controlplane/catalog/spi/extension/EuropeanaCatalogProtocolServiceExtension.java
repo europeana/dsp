@@ -8,6 +8,7 @@ import org.eclipse.edc.connector.controlplane.services.spi.protocol.ProtocolToke
 import org.eclipse.edc.participantcontext.spi.identity.ParticipantIdentityResolver;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
+import org.eclipse.edc.runtime.metamodel.annotation.Provides;
 import org.eclipse.edc.runtime.metamodel.annotation.Setting;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -27,12 +28,12 @@ import java.util.Map;
  * - `edc.catalog.publisher`: Publisher information for the catalog (default: "Europeana Foundation").
  *
  * This extension is annotated with `@Extension` and is designed to execute after `ControlPlaneServicesExtension`.
+ *
  * @author Srishti Singh
  * @since 2026-09-5
  */
-
-// TODO So the architecture is valid, but we need to make sure your provider executes after ControlPlaneServicesExtension.
 @Extension(EuropeanaCatalogProtocolServiceExtension.NAME)
+@Provides(CatalogProtocolService.class)
 public class EuropeanaCatalogProtocolServiceExtension implements ServiceExtension {
 
     public static final String NAME = "Europeana Catalog Protocol Service Extension";
@@ -75,11 +76,12 @@ public class EuropeanaCatalogProtocolServiceExtension implements ServiceExtensio
 
     @Override
     public void initialize(ServiceExtensionContext context) {
+        context.getMonitor().info(NAME + "Loaded ....");
 
         var properties = Map.<String, Object>of(
-                "dct:title", catalogTitle,
-                "dct:description", catalogDescription,
-                "dct:publisher", catalogPublisher
+                "title", catalogTitle,
+                "description", catalogDescription,
+                "publisher", catalogPublisher
         );
 
         var catalogService = new EuropeanaCatalogProtocolServiceImpl(
@@ -91,9 +93,6 @@ public class EuropeanaCatalogProtocolServiceExtension implements ServiceExtensio
                 properties
         );
 
-        context.registerService(
-                CatalogProtocolService.class,
-                catalogService
-        );
+        context.registerService(CatalogProtocolService.class, catalogService);
     }
 }

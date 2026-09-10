@@ -1,13 +1,11 @@
 package eu.europeana.dsp.connector.controlplane.catalog.spi.definitions;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import eu.europeana.dsp.connector.controlplane.catalog.spi.Resource;
 import eu.europeana.dsp.connector.controlplane.catalog.spi.ResourceDescriptionProvider;
 import org.eclipse.edc.connector.controlplane.catalog.spi.DataService;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Distribution;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**

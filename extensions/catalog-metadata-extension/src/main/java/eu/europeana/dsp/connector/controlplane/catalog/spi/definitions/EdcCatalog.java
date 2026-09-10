@@ -11,6 +11,7 @@ import java.util.Map;
  * and adheres to the {@code ResourceDescriptionProvider} interface.
  * This class provides functionality for managing resource-related metadata
  * and description within a cataloging system.
+ *
  * @author  Srishti Singh
  * @since 2026-09-1
  */

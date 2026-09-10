@@ -23,5 +23,6 @@ dependencies {
     api(libs.edc.ext.jsonld)
     api(libs.edc.controlplane.catalog)
     api(libs.edc.controlplane.core)
-    api((libs.edc.controlplane.transaction.spi))
+    api(libs.edc.controlplane.transaction.spi)
+    api(libs.commons.lang3)
 }

@@ -1,6 +1,5 @@
 package eu.europeana.dsp.connector.controlplane.catalog.spi.service;
 
-import eu.europeana.dsp.connector.controlplane.catalog.spi.definitions.EuropeanaDcatDistribution;
 import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
 import org.eclipse.edc.connector.controlplane.catalog.DefaultDistributionResolver;
 import org.eclipse.edc.connector.controlplane.catalog.spi.DataService;
@@ -12,8 +11,7 @@ import org.eclipse.edc.spi.types.domain.DataAddress;
 
 import java.util.*;
 
-import static eu.europeana.dsp.connector.controlplane.catalog.spi.service.DistributionMetadataExtractor.buildDistribution;
-import static eu.europeana.dsp.connector.controlplane.catalog.spi.service.DistributionMetadataExtractor.getDistributionCount;
+import static eu.europeana.dsp.connector.controlplane.catalog.spi.service.DistributionMetadataExtractor.*;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCT_FORMAT_ATTRIBUTE;
 
 /**
@@ -21,22 +19,22 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCT_FORMAT_ATTRIBU
  * {
  *   "id": "asset-123",
  *   "properties": {
- *     "dct:title": "Dataset 22",
- *     "dct:description": "A provider dataset distributed as ZIP files."
+ *     "title": "Dataset 22",
+ *     "description": "A provider dataset distributed as ZIP files."
  *   },
  *   "dataAddress": {
  *     "type": "EuropeanaDataAddress",
  *     "properties": {
- *       "distribution.1.dct:title": "RDF/XML ZIP distribution",
- *       "distribution.1.dct:description": "A ZIP archive containing RDF/XML files.",
- *       "distribution.1.dcat:mediaType": "https://www.iana.org/assignments/media-types/application/rdf+xml",
- *       "distribution.1.dcat:packagingFormat": "https://www.iana.org/assignments/media-types/application/zip",
- *       "distribution.1.dct:format": "HttpData-PULL",
+ *       "distribution.1.title": "RDF/XML ZIP distribution",
+ *       "distribution.1.description": "A ZIP archive containing RDF/XML files.",
+ *       "distribution.1.mediaType": "https://www.iana.org/assignments/media-types/application/rdf+xml",
+ *       "distribution.1.packagingFormat": "https://www.iana.org/assignments/media-types/application/zip",
+ *       "distribution.1.format": "HttpData-PULL",
  *
- *       "distribution.2.dct:title": "CSV distribution",
- *       "distribution.2.dct:description": "A CSV representation of the dataset.",
- *       "distribution.2.dcat:mediaType": "https://www.iana.org/assignments/media-types/text/csv",
- *       "distribution.2.dct:format": "HttpData-PULL"
+ *       "distribution.2.title": "CSV distribution",
+ *       "distribution.2.description": "A CSV representation of the dataset.",
+ *       "distribution.2.mediaType": "https://www.iana.org/assignments/media-types/text/csv",
+ *       "distribution.2.format": "HttpData-PULL"
  *     }
  *   }
  * }
@@ -54,56 +52,42 @@ public class EuropeanaDistributionResolver extends DefaultDistributionResolver {
     @Override
     public List<Distribution> getDistributions(String protocol, Asset asset) {
         if (asset.isCatalog()) {
-            var format = asset.getPropertyAsString(DCT_FORMAT_ATTRIBUTE);
-            if (format == null) {
-                format = Optional.ofNullable(asset.getDataAddress()).map(DataAddress::getType).orElse("");
+            if (asset.getDataAddress() == null) {
+                return List.of(Distribution.Builder.newInstance()
+                        .format(getFormat(asset))
+                        .dataService(DataService.Builder.newInstance()
+                                .id(Base64.getUrlEncoder().encodeToString(asset.getId().getBytes()))
+                                .build())
+                        .build());
             }
-
-            // todo check if we want to retirn here EuropeanaDcatDistribution
-            //  or this will be build out of asset properties
-            return List.of(Distribution.Builder.newInstance()
-                    .format(format)
-                    .dataService(DataService.Builder.newInstance()
-                            .id(Base64.getUrlEncoder().encodeToString(asset.getId().getBytes()))
-                            .build())
-                    .build());
+            return buildDistributions(asset.getDataAddress().getProperties(), asset.getId());
         }
-
-        // TODO check if we want to use private or public properties of asset or properties of data Address
-        return buildDistributions(asset.getDataAddress().getProperties(), asset.getId());
+        if (asset.getDataAddress() != null) {
+            return buildDistributions(asset.getDataAddress().getProperties(), asset.getId());
+        }
+        return Collections.emptyList();
     }
 
     /**
-     * Builds a list of {@link Distribution} objects based on the given properties and asset ID.
+     * Retrieves the format of the given asset.
+     * It first attempts to fetch the format using the {@code DCT_FORMAT_ATTRIBUTE}
+     * property of the asset. If the format is not defined, it attempts to derive
+     * the format from the type of the asset's data address. If no format can be
+     * determined, an empty string is returned.
      *
-     * @param properties a map of asset properties containing distribution metadata. The keys should follow
-     *                   a specific naming pattern ("distribution.{id}.[property]") to be correctly processed.
-     * @param assetId the unique identifier of the asset to associate with each distribution's data service.
-     * @return a list of {@link Distribution} objects constructed from the provided properties.
-     *         If no distributions are found, an empty list is returned.
+     * @param asset the asset from which to extract the format. This asset may contain
+     *              metadata properties and a data address from which the format can
+     *              be inferred.
+     * @return the format of the asset as a {@code String}. If the format cannot be
+     *         determined, an empty string is returned.
      */
-    private List<Distribution> buildDistributions(Map<String, Object> properties, String assetId) {
-        List<Distribution> distributions = new ArrayList<>();
-        int noOfDistribution = getDistributionCount(properties);
-
-        if (noOfDistribution > 0) {
-            // TODO check if this will be the same dataservice created everytime based on asset id
-            var dataService = DataService.Builder.newInstance()
-                    .id(Base64.getUrlEncoder()
-                            .encodeToString(assetId.getBytes()))
-                    .build();
-
-            for (int i = 1; i <= noOfDistribution; i++) {
-                EuropeanaDcatDistribution distribution = buildDistribution(properties, String.valueOf(i));
-
-                distribution.setDataService(dataService);
-                var format = distribution.getProperties().get("format");
-                distribution.setFormat(String.valueOf(format));
-                distributions.add(distribution);
-
-            }
+    private String getFormat(Asset asset) {
+        var format = asset.getPropertyAsString(DCT_FORMAT_ATTRIBUTE);
+        if (format == null) { // will fetch from https://w3id.org/edc/v0.0.1/ns/type (edc:type)
+            format = Optional.ofNullable(asset.getDataAddress()).map(DataAddress::getType).orElse("");
         }
-        return distributions;
+        return format;
     }
+
 
 }

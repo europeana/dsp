@@ -23,7 +23,7 @@ public class EuropeanaDistributionResolverTest {
         distributionList.forEach(distribution -> {
             Assertions.assertNotNull(distribution.getDataService());
             Assertions.assertNotNull(distribution.getFormat());
-            System.out.println(((EuropeanaDcatDistribution)distribution).getProperties());
+            System.out.println(((EuropeanaDcatDistribution) distribution).getProperties());
         });
     }
 }
