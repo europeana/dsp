@@ -2,6 +2,7 @@
   "@context": {
     "@vocab": "https://w3id.org/edc/v0.0.1/ns/",
     "edc": "https://w3id.org/edc/v0.0.1/ns/",
+    "edm": "http://www.europeana.eu/schemas/edm/",
     "dcat": "https://www.w3.org/ns/dcat/",
     "dct": "https://purl.org/dc/terms/",
     "odrl": "http://www.w3.org/ns/odrl/2/",
@@ -28,14 +29,17 @@
         "type": {
           "@id": "https://purl.org/dc/terms/type"
         },
+        "contentCategory": {
+          "@id": "http://www.europeana.eu/schemas/edm/contentCategory"
+        },
         "language": {
           "@id": "https://purl.org/dc/terms/language"
         },
         "issued": {
-          "@id": "https://purl.org/dc/terms/language"
+          "@id": "https://purl.org/dc/terms/issued"
         },
         "modified": {
-          "@id": "https://purl.org/dc/terms/language"
+          "@id": "https://purl.org/dc/terms/modified"
         },
         "license": {
           "@id": "https://purl.org/dc/terms/license"
@@ -51,13 +55,14 @@
         "description": {
           "@id": "https://purl.org/dc/terms/description"
         },
-        "packagingFormat": {
-          "@id": "https://www.w3.org/ns/dcat/packagingFormat",
-          "@type": "@id"
+        "issued": {
+          "@id": "https://purl.org/dc/terms/issued"
         },
-        "compressionFormat": {
-          "@id": "https://www.w3.org/ns/dcat/compressionFormat",
-          "@type": "@id"
+        "modified": {
+          "@id": "https://purl.org/dc/terms/modified"
+        },
+        "license": {
+          "@id": "https://purl.org/dc/terms/license"
         },
         "mediaType": {
           "@id": "https://www.w3.org/ns/dcat/mediaType",
@@ -65,6 +70,14 @@
         },
         "byteSize": {
           "@id": "https://www.w3.org/ns/dcat/byteSize",
+          "@type": "@id"
+        },
+        "packagingFormat": {
+          "@id": "https://www.w3.org/ns/dcat/packagingFormat",
+          "@type": "@id"
+        },
+        "compressionFormat": {
+          "@id": "https://www.w3.org/ns/dcat/compressionFormat",
           "@type": "@id"
         }
       }
