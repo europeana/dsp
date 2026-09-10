@@ -19,6 +19,9 @@
     "publisher": {
       "@id": "https://purl.org/dc/terms/publisher"
     },
+    "creator": {
+      "@id": "https://purl.org/dc/terms/creator"
+    },
     "identifier": {
       "@id": "http://purl.org/dc/elements/1.1/identifier"
     },
