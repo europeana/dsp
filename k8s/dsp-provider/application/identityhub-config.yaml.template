@@ -37,10 +37,16 @@ data:
   edc.vault.hashicorp.url: "http://vault.provider-${ENVIRONMENT}.svc.cluster.local:8200"
   edc.vault.hashicorp.token: "root"
 
-  edc.datasource.default.url: "jdbc:postgresql://postgres.provider-${ENVIRONMENT}.svc.cluster.local:5432/identityhub"
-  edc.datasource.default.user: "ih"
-  edc.datasource.default.password: "ih"
+  #edc.datasource.default.url: "jdbc:postgresql://postgres.provider-${ENVIRONMENT}.svc.cluster.local:5432/identityhub"
+  #edc.datasource.default.user: "ih"
+  #edc.datasource.default.password: "ih"
+  edc.datasource.default.url: "${PROVIDER_IH_DB_URL}"
+  edc.datasource.default.user: "${PROVIDER_IH_USER}"
+  edc.datasource.default.password: "${PROVIDER_IH_PASS}"
+  
   edc.sql.schema.autocreate: "true"
+  
+  
   edc.iam.accesstoken.jti.validation: "true"
   # grace period for credential expiry, 3600*24 = 1 day
   edc.iam.credential.renewal.graceperiod: "86400"

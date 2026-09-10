@@ -45,7 +45,12 @@ data:
   #OTEL_EXPORTER_OTLP_HEADERS: "Authorization=Bearer your_apm_secret_token"
   #OTEL_RESOURCE_ATTRIBUTES: "service.name=dp-consumer-${ENVIRONMENT},deployment.environment=${ENVIRONMENT}"
   
-  edc.datasource.default.url: "jdbc:postgresql://postgres.consumer-${ENVIRONMENT}.svc.cluster.local:5432/dataplane"
-  edc.datasource.default.user: "dp"
-  edc.datasource.default.password: "dp"
-  edc.sql.schema.autocreate: "true"
+  #edc.datasource.default.url: "jdbc:postgresql://postgres.consumer-${ENVIRONMENT}.svc.cluster.local:5432/dataplane"
+  #edc.datasource.default.user: "dp"
+  #edc.datasource.default.password: "dp"
+  #edc.sql.schema.autocreate: "true"
+  
+  edc.datasource.default.url: "${CONSUMER_DP_DB_URL}"
+  edc.datasource.default.user: "${CONSUMER_DP_USER}"
+  edc.datasource.default.password: "${CONSUMER_DP_PASS}"
+  
