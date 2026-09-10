@@ -1,5 +1,6 @@
 {
   "@context": {
+    "@vocab": "https://www.w3.org/ns/dcat/",
     "edm": "http://www.europeana.eu/schemas/edm/",
     "dcat": "https://www.w3.org/ns/dcat/",
     "dc": "http://purl.org/dc/elements/1.1/",
