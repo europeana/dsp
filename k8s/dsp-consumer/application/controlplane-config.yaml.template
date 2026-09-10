@@ -43,9 +43,13 @@ data:
   web.http.signaling.path: "/api/signaling"
 
   # dataplane config
-  edc.datasource.default.url: "jdbc:postgresql://postgres.consumer-${ENVIRONMENT}.svc.cluster.local:5432/controlplane"
-  edc.datasource.default.user: "cp"
-  edc.datasource.default.password: "cp"
+  #edc.datasource.default.url: "jdbc:postgresql://postgres.consumer-${ENVIRONMENT}.svc.cluster.local:5432/controlplane"
+  #edc.datasource.default.user: "cp"
+  #edc.datasource.default.password: "cp"
+  
+  edc.datasource.default.url: "${CONSUMER_CP_DB_URL}"
+  edc.datasource.default.user: "${CONSUMER_CP_USER}"
+  edc.datasource.default.password: "${CONSUMER_CP_PASS}"
   edc.sql.schema.autocreate: "true"
 
   edc.encryption.aes.key.alias: "aes-key-alias"

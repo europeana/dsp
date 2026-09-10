@@ -1,0 +1,20 @@
+-- controlplane db
+CREATE DATABASE provider_controlplane_{env};
+    CREATE USER provider_cp_{env} WITH PASSWORD '{provider_cp_env_pass}';
+    GRANT ALL PRIVILEGES ON DATABASE provider_controlplane_{env} TO provider_cp_{env};
+    \c provider_controlplane_{env}
+    GRANT ALL ON SCHEMA public TO provider_cp_{env};
+
+-- identityhub db
+CREATE DATABASE provider_identityhub_{env};
+    CREATE USER provider_ih_{env} WITH PASSWORD '{provider_ih_env_pass}';
+    GRANT ALL PRIVILEGES ON DATABASE provider_identityhub_{env} TO provider_ih_{env};
+    \c provider_identityhub_{env}
+    GRANT ALL ON SCHEMA public TO provider_ih_{env};
+
+-- dataplane db
+    CREATE DATABASE provider_dataplane_{env};
+    CREATE USER provider_dp_{env} WITH PASSWORD '{provider_dp_env_pass}';
+    GRANT ALL PRIVILEGES ON DATABASE provider_dataplane_{env} TO provider_dp_{env};
+    \c provider_dataplane_{env}
+    GRANT ALL ON SCHEMA public TO provider_dp_{env};

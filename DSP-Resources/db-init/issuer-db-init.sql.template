@@ -1,0 +1,11 @@
+-- issuer service db
+GRANT ALL PRIVILEGES ON DATABASE issuerservice_{env} TO issuer;
+    \c issuerservice_{env}
+    GRANT ALL ON SCHEMA public TO issuer_{env};
+
+-- keycloak db
+    CREATE DATABASE keycloak_{env};
+    CREATE USER kc_{env} WITH PASSWORD '{kc_env_pass}';
+    GRANT ALL PRIVILEGES ON DATABASE keycloak_{env} TO kc_{env};
+    \c keycloak_{env}
+    GRANT ALL ON SCHEMA public TO kc_{env};
