@@ -194,14 +194,17 @@ spec:
               fi
 
               echo "Debug Response body: ${RESPONSE}"
+         
+              echo "Environment: ${ENVIRONMENT}" 
+              
+              if[ ${ENVIRONMENT} = "acceptance" ]; then
+                echo "!!! Skiping credentials issuance in acceptance, should update the script to verify existence !!!" 
+              fi
                 
               echo "================================================"
               echo "Step 3: Requesting credential issuance"
               echo "================================================"
-              if[${ENVIRONMENT} = "acceptance"]; then
-                echo "Skiping credentials issuance in acceptance, should update the script to verify existence!!!" 
-              fi
-              
+                       
               
               
               ADMIN_TOKEN=$(curl -sf -X POST "${KC_HOST}/realms/mvd/protocol/openid-connect/token" \
