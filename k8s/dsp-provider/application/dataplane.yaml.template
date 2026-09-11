@@ -104,7 +104,7 @@ spec:
     - dp.provider-${ENVIRONMENT}.localhost
     - dp-provider-${ENVIRONMENT}.${DEPLOYMENT_BASE_URL}
   rules:
-    # /api/public → public port 11002
+    # /api/public → public port (changes from 11002 to 80)
     - matches:
         - path:
             type: PathPrefix
@@ -117,7 +117,7 @@ spec:
               replacePrefixMatch: /
       backendRefs:
         - name: dataplane
-          port: 11002
+          port: 80
           weight: 1
     - matches:
         - path:
