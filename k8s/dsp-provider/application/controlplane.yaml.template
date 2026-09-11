@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: controlplane
-          image: ghcr.io/eclipse-edc/minimumviabledataspace/controlplane:${MVD_IMAGE_TAG}
+          image: europeana/dsp-controlplane:${DSP_IMAGE_TAG}
           imagePullPolicy: ${IMAGE_PULL_POLICY}
           envFrom:
             - configMapRef: { name: controlplane-config }

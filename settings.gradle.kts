@@ -29,6 +29,8 @@ include(":tests:end2end")
 
 include(":extensions:signaling-auth-none")
 include(":extensions:jsonld-context-extension")
+include(":extensions:catalog-metadata-extension")
+
 // launcher modules
 include(":launchers:identity-hub")
 include(":launchers:controlplane")

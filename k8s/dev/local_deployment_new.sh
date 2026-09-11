@@ -247,6 +247,6 @@ echo "========================================"
 echo ""
 
 #forward port localhost:80 to traefik   
-kubectl port-forward svc/traefik 80:80 -n traefik
+kubectl port-forward svc/traefik 8080:80 -n traefik
 
 
