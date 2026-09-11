@@ -18,7 +18,8 @@ metadata:
   name: dataplane-config
   namespace: provider-${ENVIRONMENT}
 data:
-  edc.hostname: "dataplane.provider-${ENVIRONMENT}.svc.cluster.local"
+  #edc.hostname: "dataplane.provider-${ENVIRONMENT}.svc.cluster.local"
+  edc.hostname: "dp-provider-${ENVIRONMENT}.${DEPLOYMENT_BASE_URL}"
   dataplane.id: "provider-dataplane"
 
   edc.transfer.proxy.token.verifier.publickey.alias: "dataplane-public"
