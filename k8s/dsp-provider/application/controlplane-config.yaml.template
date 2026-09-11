@@ -71,3 +71,7 @@ data:
   edc.iam.trusted-issuer.issuer.id: "did:web:issuerservice.dsp-issuer-${ENVIRONMENT}.svc.cluster.local%3A10016:issuer"
 
   JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044"
+
+  # for context loading in http and https
+  edc.jsonld.https.enabled: "true"
+  edc.jsonld.http.enabled: "true"
