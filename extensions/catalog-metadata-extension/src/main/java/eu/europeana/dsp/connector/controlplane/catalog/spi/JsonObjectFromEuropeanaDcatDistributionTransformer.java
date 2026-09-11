@@ -29,7 +29,7 @@ public class JsonObjectFromEuropeanaDcatDistributionTransformer
         extends AbstractJsonLdTransformer<EuropeanaDcatDistribution, JsonObject> {
 
     private final JsonBuilderFactory jsonFactory;
-    private static final String CONTEXT = "https://api.test.eanadev.org/context/catalog.jsonld";
+    private static final String CONTEXT = "https://api.test.eanadev.org/context/edc.jsonld";
 
     public JsonObjectFromEuropeanaDcatDistributionTransformer(JsonBuilderFactory jsonFactory) {
         super(EuropeanaDcatDistribution.class, JsonObject.class);
