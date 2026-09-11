@@ -16,6 +16,8 @@ import org.eclipse.edc.transaction.spi.TransactionContext;
 
 import java.util.Map;
 
+import static org.eclipse.edc.jsonld.spi.Namespaces.DCT_SCHEMA;
+
 /**
  * The EuropeanaCatalogProtocolServiceExtension integrates a protocol-based catalog service into the runtime.
  * It provides configuration-driven metadata for the catalog such as title, description, and publisher,
@@ -79,9 +81,9 @@ public class EuropeanaCatalogProtocolServiceExtension implements ServiceExtensio
         context.getMonitor().info(NAME + "Loaded ....");
 
         var properties = Map.<String, Object>of(
-                "title", catalogTitle,
-                "description", catalogDescription,
-                "publisher", catalogPublisher
+                DCT_SCHEMA + "title", catalogTitle,
+                DCT_SCHEMA + "description", catalogDescription,
+                DCT_SCHEMA + "publisher", catalogPublisher
         );
 
         var catalogService = new EuropeanaCatalogProtocolServiceImpl(

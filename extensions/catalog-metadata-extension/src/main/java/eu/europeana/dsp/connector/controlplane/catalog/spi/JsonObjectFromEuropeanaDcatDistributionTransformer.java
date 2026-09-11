@@ -29,7 +29,6 @@ public class JsonObjectFromEuropeanaDcatDistributionTransformer
         extends AbstractJsonLdTransformer<EuropeanaDcatDistribution, JsonObject> {
 
     private final JsonBuilderFactory jsonFactory;
-    // has the @Vocab set default as dct
     private static final String CONTEXT = "https://api.test.eanadev.org/context/catalog.jsonld";
 
     public JsonObjectFromEuropeanaDcatDistributionTransformer(JsonBuilderFactory jsonFactory) {
