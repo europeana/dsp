@@ -197,7 +197,7 @@ spec:
               
               echo "Environment: ${ENVIRONMENT}" 
               
-              if [ "${ENVIRONMENT}" -eq "acceptance" ]; then
+              if [ "${ENVIRONMENT}" = "acceptance" ]; then
                 echo "!!! Skiping credentials issuance in acceptance, should update the script to verify existence !!!"
                 exit 0
               fi
