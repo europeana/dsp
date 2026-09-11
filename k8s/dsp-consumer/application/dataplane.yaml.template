@@ -116,19 +116,19 @@ spec:
               replacePrefixMatch: /
       backendRefs:
         - name: dataplane
-          port: 11002 #proxy port, if 1103 doesn't work switch to 1102
+          port: 11003 #proxy port, if 1103 doesn't work switch to 1102
           weight: 1
     - matches:
         - path:
             type: PathPrefix
-            value: /api/proxy
+            value: /api/public
       filters:
         - type: URLRewrite
           urlRewrite:
             path:
               type: ReplacePrefixMatch
-              replacePrefixMatch: /api/proxy
+              replacePrefixMatch: /api/public
       backendRefs:
         - name: dataplane
-          port: 11003
+          port: 11002
           weight: 1

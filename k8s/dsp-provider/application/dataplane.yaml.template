@@ -81,8 +81,8 @@ spec:
       port: 8080
       targetPort: 8080
     - name: public
-      port: 11002
-      targetPort: 11002
+      port: 80
+      targetPort: 80
     - name: signaling
       port: 8182
       targetPort: 8182
@@ -132,4 +132,18 @@ spec:
       backendRefs:
         - name: dataplane
           port: 11003
+          weight: 1
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/public
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /api/public
+      backendRefs:
+        - name: dataplane
+          port: 80
           weight: 1
