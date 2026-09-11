@@ -116,5 +116,5 @@ spec:
               replacePrefixMatch: /
       backendRefs:
         - name: dataplane
-          port: 11003 #proxy port, if doesn't work switch to 1102
+          port: 11002 #proxy port, if 1103 doesn't work switch to 1102
           weight: 1
