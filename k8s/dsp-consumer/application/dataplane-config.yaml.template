@@ -30,10 +30,10 @@ data:
   web.http.signaling.port: "8182"
   web.http.signaling.path: "/api/signaling"
 
-  web.http.public.port: "1102"
+  web.http.public.port: "11002"
   web.http.public.path: "/api/public"
 
-  web.http.proxy.port: "1103"
+  web.http.proxy.port: "11003"
   web.http.proxy.path: "/api/proxy"
 
   edc.vault.hashicorp.url: "http://vault.consumer-${ENVIRONMENT}.svc.cluster.local:8200"
