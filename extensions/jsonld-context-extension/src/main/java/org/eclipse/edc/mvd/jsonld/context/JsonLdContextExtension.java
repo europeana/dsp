@@ -19,43 +19,14 @@ import java.net.URI;
 @Extension(value = "Custom JSON-LD Context Extension")
 public class JsonLdContextExtension implements ServiceExtension {
 
-    private static final String CONTEXT_URL = "https://w3id.org/dspace/context.jsonld";
+    private static final String CONTEXT_URL = "https://api.test.eanadev.org/context/edc.jsonld";
 
     @Inject
     private JsonLd jsonLd;
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        try {
-            var resource = getClass()
-                    .getClassLoader()
-                    .getResource("jsonld/dspace-context.jsonld");
-
-            if (resource == null) {
-                throw new IllegalStateException(
-                        "Could not find dspace-context.jsonld"
-                );
-            }
-
-            URI documentLocation = resource.toURI();
-
-            // Tell JSON-LD about this context
-            jsonLd.registerContext(CONTEXT_URL);
-
-            // Map the URL to our local file
-            jsonLd.registerCachedDocument(
-                    CONTEXT_URL,
-                    documentLocation
-            );
-
-            context.getMonitor()
-                    .info("Registered JSON-LD context: " + CONTEXT_URL);
-
-        } catch (Exception e) {
-            throw new RuntimeException(
-                    "Failed to register JSON-LD context",
-                    e
-            );
-        }
+        jsonLd.registerContext(CONTEXT_URL);
+        context.getMonitor().info("Registered Europeana JSON-LD context: " + CONTEXT_URL);
     }
 }

@@ -84,6 +84,13 @@ data:
   #OTEL_EXPORTER_OTLP_HEADERS: "Authorization=Bearer your_apm_secret_token"
   #OTEL_RESOURCE_ATTRIBUTES: "service.name=consumer-${ENVIRONMENT},deployment.environment=${ENVIRONMENT}"
   
-  
+    ## catalog Metadata properties
+    edc.catalog.title: "Europeana Dataset Catalog"
+    edc.catalog.description: "Europeana datasets available through DSP"
+    edc.catalog.publisher: "Europeana Foundation"
+
+    # for context loading in http and https
+    edc.jsonld.https.enabled: "true"
+    edc.jsonld.http.enabled: "true"
   
   

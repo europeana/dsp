@@ -35,7 +35,7 @@ spec:
       containers:
         - name: controlplane
           image: dsp-controlplane:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef: { name: controlplane-config }
           ports:

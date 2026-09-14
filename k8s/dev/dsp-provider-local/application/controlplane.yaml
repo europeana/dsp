@@ -35,7 +35,10 @@ spec:
       containers:
         - name: controlplane
           image: dsp-controlplane:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
           envFrom:
             - configMapRef: { name: controlplane-config }
           ports:
