@@ -57,28 +57,26 @@ public class EuropeanaCatalogProtocolServiceExtension implements ServiceExtensio
 
     @Setting(
             description = "Catalog title",
-            defaultValue = "Europeana Dataset Catalog",
             key = "edc.catalog.title"
     )
     private String catalogTitle;
 
     @Setting(
             description = "Catalog description",
-            defaultValue = "Europeana datasets available through DSP",
             key = "edc.catalog.description"
     )
     private String catalogDescription;
 
     @Setting(
             description = "Catalog Publisher",
-            defaultValue = "Europeana Foundation",
             key = "edc.catalog.publisher"
     )
     private String catalogPublisher;
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        context.getMonitor().info(NAME + "Loaded ....");
+        context.getMonitor().info(NAME + "Loaded with catalog properties: ["
+                + catalogTitle + ", " + catalogDescription + ", " + catalogPublisher + "]");
 
         var properties = Map.<String, Object>of(
                 DCT_SCHEMA + "title", catalogTitle,
