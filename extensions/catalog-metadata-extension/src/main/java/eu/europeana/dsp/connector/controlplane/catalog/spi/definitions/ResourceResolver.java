@@ -10,6 +10,7 @@ import java.util.Map;
  *
  * The class consolidates multiple metadata attributes, adhering to the DCAT specifications,
  * and maps them to keys for structured resource representation.
+ *
  * @author Srishti Singh
  * @since 2026-09-1
  */

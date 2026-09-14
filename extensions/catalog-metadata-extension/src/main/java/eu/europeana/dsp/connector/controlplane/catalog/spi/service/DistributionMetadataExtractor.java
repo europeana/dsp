@@ -5,7 +5,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.edc.connector.controlplane.catalog.spi.DataService;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Distribution;
 
-import java.util.*;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,7 +80,7 @@ public class DistributionMetadataExtractor {
             var metadataProperty = StringUtils.substringAfter(propertyName, prefix);
             distributionProperties.put(metadataProperty, value);
         }
-        return new EuropeanaDcatDistribution(distributionId,distributionProperties);
+        return new EuropeanaDcatDistribution(distributionId, distributionProperties);
     }
 
     /**

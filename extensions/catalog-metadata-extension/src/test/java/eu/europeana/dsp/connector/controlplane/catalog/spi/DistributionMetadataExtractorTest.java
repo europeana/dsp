@@ -44,6 +44,7 @@ public class DistributionMetadataExtractorTest {
     void testDistributionCount() {
         Assertions.assertEquals(2, DistributionMetadataExtractor.getDistributionCount(properties));
     }
+
     @Test
     public void testDistribution1() {
         EuropeanaDcatDistribution distribution = DistributionMetadataExtractor.buildDistribution(

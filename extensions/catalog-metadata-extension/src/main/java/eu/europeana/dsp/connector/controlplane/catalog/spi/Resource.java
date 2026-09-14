@@ -10,6 +10,7 @@ import java.util.Map;
  * The properties provided by this interface include both descriptive and administrative metadata
  * which can be utilized in resource management or catalog-related operations.
  * See: @link https://www.w3.org/TR/vocab-dcat/#resource
+ *
  * @author  Srishti Singh
  * @since 2026-09-1
  */

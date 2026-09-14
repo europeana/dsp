@@ -75,8 +75,8 @@ public class EuropeanaCatalogProtocolServiceExtension implements ServiceExtensio
 
     @Override
     public void initialize(ServiceExtensionContext context) {
-        context.getMonitor().info(NAME + "Loaded with catalog properties: ["
-                + catalogTitle + ", " + catalogDescription + ", " + catalogPublisher + "]");
+        context.getMonitor().info(NAME + "Loaded with catalog properties: [" +
+                catalogTitle + ", " + catalogDescription + ", " + catalogPublisher + "]");
 
         var properties = Map.<String, Object>of(
                 DCT_SCHEMA + "title", catalogTitle,

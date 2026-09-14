@@ -6,8 +6,6 @@ import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
-import java.net.URI;
-
 /**
  * An extension that registers a custom JSON-LD context for use within the system.
  * This extension provides the ability to map a predefined JSON-LD context URL
