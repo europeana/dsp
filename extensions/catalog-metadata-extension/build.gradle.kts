@@ -25,4 +25,5 @@ dependencies {
     api(libs.edc.controlplane.core)
     api(libs.edc.controlplane.transaction.spi)
     api(libs.commons.lang3)
+    api(libs.edc.controlplane.transform)
 }

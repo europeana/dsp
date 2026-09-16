@@ -1,4 +1,4 @@
-package eu.europeana.dsp.connector.controlplane.catalog.spi;
+package eu.europeana.dsp.connector.controlplane.catalog.spi.transformer.from;
 
 import eu.europeana.dsp.connector.controlplane.catalog.spi.definitions.EuropeanaDcatDistribution;
 import jakarta.json.JsonBuilderFactory;

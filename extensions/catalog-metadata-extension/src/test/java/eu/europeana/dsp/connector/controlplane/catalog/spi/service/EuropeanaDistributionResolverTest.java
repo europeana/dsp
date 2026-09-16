@@ -1,7 +1,7 @@
-package eu.europeana.dsp.connector.controlplane.catalog.spi;
+package eu.europeana.dsp.connector.controlplane.catalog.spi.service;
 
+import eu.europeana.dsp.connector.controlplane.catalog.spi.TestUtils;
 import eu.europeana.dsp.connector.controlplane.catalog.spi.definitions.EuropeanaDcatDistribution;
-import eu.europeana.dsp.connector.controlplane.catalog.spi.service.EuropeanaDistributionResolver;
 import org.eclipse.edc.connector.controlplane.catalog.spi.Distribution;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

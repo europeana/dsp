@@ -1,7 +1,10 @@
 package eu.europeana.dsp.connector.controlplane.catalog.spi;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsonp.JSONPModule;
 import jakarta.json.JsonObject;
 import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
 
@@ -10,7 +13,7 @@ import java.io.InputStream;
 
 public class TestUtils {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    public static final ObjectMapper OBJECT_MAPPER = createObjectMapper();
 
     private static InputStream getInputStream(String resourceName) {
         InputStream inputStream = Asset.class.getClassLoader().getResourceAsStream(resourceName);
@@ -31,5 +34,20 @@ public class TestUtils {
 
     public static JsonNode loadJson(JsonObject jsonObject) throws IOException {
         return OBJECT_MAPPER.readTree(jsonObject.toString());
+    }
+
+    private static ObjectMapper createObjectMapper() {
+        var mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.registerModule(new JSONPModule());
+        var module = new SimpleModule() {
+            @Override
+            public void setupModule(SetupContext context) {
+                super.setupModule(context);
+            }
+        };
+        mapper.registerModule(module);
+        mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+        return mapper;
     }
 }
