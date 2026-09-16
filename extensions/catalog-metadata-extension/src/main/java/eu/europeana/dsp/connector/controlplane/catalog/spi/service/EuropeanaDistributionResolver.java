@@ -1,5 +1,7 @@
 package eu.europeana.dsp.connector.controlplane.catalog.spi.service;
 
+import eu.europeana.dsp.connector.controlplane.catalog.spi.definitions.EuropeanaDcatDistribution;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
 import org.eclipse.edc.connector.controlplane.catalog.DefaultDistributionResolver;
 import org.eclipse.edc.connector.controlplane.catalog.spi.DataService;
@@ -9,12 +11,9 @@ import org.eclipse.edc.connector.controlplane.transfer.spi.flow.DataFlowControll
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 
-import java.util.Base64;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-import static eu.europeana.dsp.connector.controlplane.catalog.spi.service.DistributionMetadataExtractor.buildDistributions;
+import static eu.europeana.dsp.connector.controlplane.catalog.spi.service.DistributionMetadataExtractor.*;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCT_FORMAT_ATTRIBUTE;
 
 /**
@@ -63,13 +62,45 @@ public class EuropeanaDistributionResolver extends DefaultDistributionResolver {
                                 .build())
                         .build());
             }
-            return buildDistributions(asset.getDataAddress().getProperties(), asset.getId());
+            return buildDistributions(asset.getDataAddress(), asset.getId());
         }
         if (asset.getDataAddress() != null) {
-            return buildDistributions(asset.getDataAddress().getProperties(), asset.getId());
+            return buildDistributions(asset.getDataAddress(), asset.getId());
         }
         return Collections.emptyList();
     }
+
+    /**
+     * Builds a list of {@link Distribution} objects based on the given properties and asset ID.
+     *
+     * @param dataAddress dataaddress object with a map of properties containing distribution metadata. The keys should follow
+     *                   a specific naming pattern ("distribution.{id}.[property]") to be correctly processed.
+     * @param assetId the unique identifier of the asset to associate with each distribution's data service.
+     * @return a list of {@link Distribution} objects constructed from the provided properties.
+     *         If no distributions are found, an empty list is returned.
+     */
+    public static List<Distribution> buildDistributions(DataAddress dataAddress, String assetId) {
+        List<Distribution> distributions = new ArrayList<>();
+        Map<String, Object> properties = dataAddress.getProperties();
+        int noOfDistribution = getDistributionCount(properties);
+
+        if (noOfDistribution > 0) {
+            // TODO check if this will be the same dataservice created everytime based on asset id
+            var dataService = DataService.Builder.newInstance()
+                    .id(Base64.getUrlEncoder()
+                            .encodeToString(assetId.getBytes()))
+                    .build();
+
+            for (int i = 1; i <= noOfDistribution; i++) {
+                EuropeanaDcatDistribution distribution = buildDistribution(properties, String.valueOf(i));
+                distribution.setDataService(dataService);
+                distribution.setFormat(getDistributionFormat(dataAddress));
+                distributions.add(distribution);
+            }
+        }
+        return distributions;
+    }
+
 
     /**
      * Retrieves the format of the given asset.
