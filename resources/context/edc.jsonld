@@ -75,8 +75,8 @@
       "@id": "https://www.w3.org/ns/dcat/compressionFormat",
       "@type": "@id"
     },
-    "publicProperties": {
-       "@id": "https://w3id.org/edc/v0.0.1/ns/publicProperties"
+    "properties": {
+       "@id": "https://w3id.org/edc/v0.0.1/ns/properties"
     }
   }
 }
