@@ -68,7 +68,6 @@ public class EuropeanaPolicyDefinitionTransformerExtension implements ServiceExt
          */
         transformerRegistry.forContext(DSP_TRANSFORMER_CONTEXT_V_2025_1)
                 .register(
-                        new EuropeanaJsonObjectFromPolicyTransformer(jsonFactory, participantIdMapper,
-                                new JsonObjectFromPolicyTransformer.TransformerConfig(), typeManager, JSON_LD));
+                        new EuropeanaJsonObjectFromPolicyTransformer(jsonFactory, participantIdMapper));
     }
 }

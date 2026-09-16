@@ -33,16 +33,12 @@ import static eu.europeana.dsp.connector.controlplane.catalog.spi.DspVocabulary.
  */
 public class EuropeanaJsonObjectFromPolicyTransformer extends JsonObjectFromPolicyTransformer {
 
-    private final TypeManager typeManager;
-    private final String typeContext;
-    private final JsonBuilderFactory jsonFactory;
+    public EuropeanaJsonObjectFromPolicyTransformer(JsonBuilderFactory jsonFactory, ParticipantIdMapper participantIdMapper) {
+        super(jsonFactory, participantIdMapper, new TransformerConfig());
+    }
 
-    public EuropeanaJsonObjectFromPolicyTransformer(JsonBuilderFactory jsonFactory, ParticipantIdMapper participantIdMapper,
-                                                    TransformerConfig config, TypeManager typeManager, String typeContext) {
+    public EuropeanaJsonObjectFromPolicyTransformer(JsonBuilderFactory jsonFactory, ParticipantIdMapper participantIdMapper, TransformerConfig config) {
         super(jsonFactory, participantIdMapper, config);
-        this.typeManager = typeManager;
-        this.typeContext = typeContext;
-        this.jsonFactory = jsonFactory;
     }
 
     @Override
@@ -52,23 +48,20 @@ public class EuropeanaJsonObjectFromPolicyTransformer extends JsonObjectFromPoli
             return null;
         }
 
-        // add now the public properties from the extensibleProperties
+        // add now the europeana properties from the extensibleProperties
         var builder = Json.createObjectBuilder(policyJson);
         var publicProperties = policy.getExtensibleProperties();
-
         if (publicProperties != null && !publicProperties.isEmpty()) {
-            var publicPropertiesBuilder = jsonFactory.createObjectBuilder();
-
-            transformProperties(
-                    (Map<String, ?>) publicProperties.get(POLICY_DEFINITION_EUROPEANA_PROPERTIES),
-                    publicPropertiesBuilder,
-                    typeManager.getMapper(typeContext),
-                    context);
-
-            builder.add(
-                    EDC_POLICY_DEFINITION_PUBLIC_PROPERTIES,
-                    publicPropertiesBuilder
-            );
+            Map<String, Object> europeanaProp = (Map<String, Object>) publicProperties.get(POLICY_DEFINITION_EUROPEANA_PROPERTIES);
+            europeanaProp.forEach((key, value) -> {
+                if (value == null) {
+                    builder.addNull(key);
+                } else if (value instanceof JsonValue jsonValue) {
+                    builder.add(key, jsonValue);
+                } else {
+                    builder.add(key, value.toString());
+                }
+            });
         }
         return builder.build();
     }
