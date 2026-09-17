@@ -1,7 +1,6 @@
 package eu.europeana.dsp.connector.controlplane.catalog.spi.service;
 
 import eu.europeana.dsp.connector.controlplane.catalog.spi.definitions.EuropeanaDcatDistribution;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
 import org.eclipse.edc.connector.controlplane.catalog.DefaultDistributionResolver;
 import org.eclipse.edc.connector.controlplane.catalog.spi.DataService;

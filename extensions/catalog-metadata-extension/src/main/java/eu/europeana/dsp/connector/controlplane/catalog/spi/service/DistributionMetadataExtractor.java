@@ -2,26 +2,21 @@ package eu.europeana.dsp.connector.controlplane.catalog.spi.service;
 
 import eu.europeana.dsp.connector.controlplane.catalog.spi.definitions.EuropeanaDcatDistribution;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
-import org.eclipse.edc.connector.controlplane.catalog.spi.DataService;
-import org.eclipse.edc.connector.controlplane.catalog.spi.Distribution;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 
-import java.util.Base64;
 import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCT_FORMAT_ATTRIBUTE;
-import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
-
 // this class extracts the distribution metadata from the asset properties.
 // so distribution.distributionId:title will become title
 public class DistributionMetadataExtractor {
+
+    private static final Map<String, String> FORMAT_BY_TYPE = Map.of(
+            "HttpData", "HttpData-PULL"
+    );
 
     private static final String DISTRIBUTION_PREFIX   = "distribution.";
     private static final Pattern DISTRIBUTION_PATTERN =
@@ -56,13 +51,10 @@ public class DistributionMetadataExtractor {
     }
 
     public static String getDistributionFormat(DataAddress dataAddress) {
-        var format = dataAddress != null
-                ? dataAddress.getType() + "-PULL"
-                : null;
-        if (format == null) {
-            format = dataAddress.getProperties().get(DCT_FORMAT_ATTRIBUTE).toString();
-        }
-        return format;
+        return Optional.ofNullable(dataAddress)
+                .map(DataAddress::getType)
+                .map(FORMAT_BY_TYPE::get)
+                .orElse("");
     }
 
 }
