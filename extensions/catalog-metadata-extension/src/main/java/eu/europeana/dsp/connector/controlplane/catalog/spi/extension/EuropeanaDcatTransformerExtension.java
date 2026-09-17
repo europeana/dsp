@@ -1,6 +1,6 @@
 package eu.europeana.dsp.connector.controlplane.catalog.spi.extension;
 
-import eu.europeana.dsp.connector.controlplane.catalog.spi.JsonObjectFromEuropeanaDcatDistributionTransformer;
+import eu.europeana.dsp.connector.controlplane.catalog.spi.transformer.from.JsonObjectFromEuropeanaDcatDistributionTransformer;
 import jakarta.json.Json;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
@@ -11,16 +11,12 @@ import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 
 import java.util.Map;
 
+import static eu.europeana.dsp.connector.controlplane.catalog.spi.DspVocabulary.DSP_TRANSFORMER_CONTEXT_V_2025_1;
+
 @Extension(EuropeanaDcatTransformerExtension.NAME)
 public class EuropeanaDcatTransformerExtension implements ServiceExtension {
 
     public static final String NAME = "Europeana DCAT Distribution Transformer Extension";
-
-    // TODO need to add the dependency for the static constants, for now adding them like this
-    String DSP_CONTEXT_SEPARATOR = ":";
-    String V_2025_1_VERSION = "2025-1";
-    String DSP_TRANSFORMER_CONTEXT = "dsp-api";
-    String DSP_TRANSFORMER_CONTEXT_V_2025_1 = DSP_TRANSFORMER_CONTEXT + DSP_CONTEXT_SEPARATOR + V_2025_1_VERSION;
 
     @Inject
     private JsonLd jsonLd;
