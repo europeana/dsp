@@ -4,8 +4,6 @@ import eu.europeana.dsp.connector.controlplane.catalog.spi.transformer.from.Euro
 import eu.europeana.dsp.connector.controlplane.catalog.spi.transformer.from.EuropeanaJsonObjectFromPolicyTransformer;
 import eu.europeana.dsp.connector.controlplane.catalog.spi.transformer.to.EuropeanaJsonObjectToPolicyDefinitionTransformer;
 import jakarta.json.Json;
-import org.eclipse.edc.connector.controlplane.transform.odrl.from.JsonObjectFromPolicyTransformer;
-import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.participant.spi.ParticipantIdMapper;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
