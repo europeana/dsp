@@ -35,7 +35,7 @@ spec:
       containers:
         - name: controlplane
           image: europeana/dsp-controlplane:${DSP_IMAGE_TAG}
-          imagePullPolicy: Always
+          imagePullPolicy: ${DSP_IMAGE_PULL_POLICY}
           envFrom:
             - configMapRef: { name: controlplane-config }
           ports:
