@@ -47,22 +47,34 @@ public class EuropeanaJsonObjectFromPolicyTransformer extends JsonObjectFromPoli
         if (policyJson == null) {
             return null;
         }
-
-        // add now the europeana properties from the extensibleProperties
         var builder = Json.createObjectBuilder(policyJson);
+
         var publicProperties = policy.getExtensibleProperties();
+
         if (publicProperties != null && !publicProperties.isEmpty()) {
-            Map<String, Object> europeanaProp = (Map<String, Object>) publicProperties.get(POLICY_DEFINITION_EUROPEANA_PROPERTIES);
-            europeanaProp.forEach((key, value) -> {
-                if (value == null) {
-                    builder.addNull(key);
-                } else if (value instanceof JsonValue jsonValue) {
-                    builder.add(key, jsonValue);
+            publicProperties.forEach((key, value) -> {
+
+                if (POLICY_DEFINITION_EUROPEANA_PROPERTIES.equals(key)
+                        && value instanceof Map<?, ?> europeanaProperties) {
+
+                    europeanaProperties.forEach((nestedKey, nestedValue) ->
+                            addProperty(builder, String.valueOf(nestedKey), nestedValue)
+                    );
                 } else {
-                    builder.add(key, value.toString());
+                    addProperty(builder, key, value);
                 }
             });
         }
         return builder.build();
+    }
+
+    private void addProperty(JsonObjectBuilder builder, String key, Object value) {
+        if (value == null) {
+            builder.addNull(key);
+        } else if (value instanceof JsonValue jsonValue) {
+            builder.add(key, jsonValue);
+        } else {
+            builder.add(key, value.toString());
+        }
     }
 }
