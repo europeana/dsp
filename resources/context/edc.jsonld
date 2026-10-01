@@ -77,14 +77,6 @@
     },
     "properties": {
        "@id": "https://w3id.org/edc/v0.0.1/ns/properties"
-    },
-    "assigner": {
-      "@id": "http://www.w3.org/ns/odrl/2/assigner",
-      "@type": "@id"
-    },
-   "assignee": {
-      "@id": "http://www.w3.org/ns/odrl/2/assignee",
-      "@type": "@id"
-   }
+    }
   }
 }
