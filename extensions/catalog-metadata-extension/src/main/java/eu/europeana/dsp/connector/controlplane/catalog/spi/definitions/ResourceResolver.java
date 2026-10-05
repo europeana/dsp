@@ -2,6 +2,7 @@ package eu.europeana.dsp.connector.controlplane.catalog.spi.definitions;
 
 import eu.europeana.dsp.connector.controlplane.catalog.spi.Resource;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -171,6 +172,42 @@ public class ResourceResolver implements Resource {
         return qualifiedRelation;
     }
 
+    @Override
+    public Map<String, Object> getProperties() {
+        Map<String, Object> properties = new HashMap<>();
+
+        putIfNotNull(properties, "dct:title", getTitle());
+        putIfNotNull(properties, "dct:description", getDescription());
+        putIfNotNull(properties, "dct:identifier", getIdentifier());
+        putIfNotNull(properties, "dct:issued", getIssued());
+        putIfNotNull(properties, "dct:modified", getModified());
+        putIfNotNull(properties, "dct:language", getLanguage());
+        putIfNotNull(properties, "dct:publisher", getPublisher());
+        putIfNotNull(properties, "dct:creator", getCreator());
+
+        putIfNotNull(properties, "dcat:contactPoint", getContactPoint());
+        putIfNotNull(properties, "dcat:keyword", getKeyword());
+        putIfNotNull(properties, "dcat:theme", getTheme());
+        putIfNotNull(properties, "dcat:landingPage", getLandingPage());
+        putIfNotNull(properties, "dcat:qualifiedRelation", getQualifiedRelation());
+
+        putIfNotNull(properties, "dct:accessRights", getAccessRights());
+        putIfNotNull(properties, "dct:license", getLicense());
+        putIfNotNull(properties, "dct:rights", getRights());
+        putIfNotNull(properties, "dct:conformsTo", getConformsTo());
+        putIfNotNull(properties, "dct:provenance", getProvenance());
+
+        return properties;
+    }
+
+    private void putIfNotNull(
+            Map<String, Object> properties,
+            String key,
+            Object value) {
+        if (value != null) {
+            properties.put(key, value);
+        }
+    }
 
     // Setters
     public void setTitle(String title) {
