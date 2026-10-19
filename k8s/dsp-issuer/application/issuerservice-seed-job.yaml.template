@@ -32,7 +32,7 @@ spec:
         platform: edcv
         type: edc-job-${ENVIRONMENT}
     spec:
-      restartPolicy: OnFailure
+      restartPolicy: Never
       initContainers:
         # Wait for issuerservice to be ready
         - name: wait-for-issuerservice
