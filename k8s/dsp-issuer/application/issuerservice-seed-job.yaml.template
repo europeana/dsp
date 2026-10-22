@@ -219,7 +219,8 @@ spec:
               
               
               echo "tenant response: $STATUS"
-              STATUS="${TENANT_RESPONSE##*/}"
+              STATUS=" ${TENANT_RESPONSE##*$'\n'} # last line is the status (everything after the last newline) 
+             
               echo "status: $STATUS"
               
               if [ "$STATUS" = "409" ]; then 
@@ -241,9 +242,11 @@ spec:
                 -H "Content-Type: application/x-www-form-urlencoded" \
                 -d "grant_type=client_credentials" \
                 -d "client_id=issuer" \
-                -d "client_secret=issuer-secret" \
-                -d "scope=issuer-admin-api:write,issuer-admin-api:read" | sed -n 's/.*"access_token":"\([^"]*\)".*/\1/p')
-
+                -d "client_secret=issuer-secret" | sed -n 's/.*"access_token":"\([^"]*\)".*/\1/p')
+  
+              #keep all scopes
+              #\  -d "scope=issuer-admin-api:write,issuer-admin-api:read"
+               
               if [ -z "$ISSUER_TOKEN" ]; then
                 echo "Failed to get issuer token"
                 exit 1
