@@ -90,8 +90,15 @@ spec:
               fi
 
               # Create Keycloak client for Vault access
-              echo "Creating Vault Access Client"
-              if curl -sf -X POST "${KC_HOST}/admin/realms/mvd/clients" \
+              echo "Verifying Vault Access Client"
+              KC_ISSUER_CLIENT_ID=$(curl -sf -X GET "${KC_HOST}/admin/realms/mvd/clients?clientId=${ISSUER_CLIENT_ID}" \
+                -H "Accept: application/json" \
+                -H "Authorization: Bearer ${KC_TOKEN}" | sed -n 's/.*"clientId":"\([^"]*\)".*/\1/p')
+              
+              if [ "$KC_ISSUER_CLIENT_ID" = "${ISSUER_CLIENT_ID}"]; then
+                echo "Client for Vault Access exists: $ISSUER_CLIENT_ID, skip creation"
+              else 
+                KC_ISSUER_CLIENT = (curl -sf -X POST "${KC_HOST}/admin/realms/mvd/clients" \
                 -H "Authorization: Bearer ${KC_TOKEN}" \
                 -H "Content-Type: application/json" \
                 -d '{
@@ -136,10 +143,14 @@ spec:
                       }
                     }
                   ]
-                }'; then
-                echo "✓ Vault Access Token created"
-              else
-                echo "⚠ Vault Access Client creation failed (may already exist)"
+                }')
+                  # verify the client creation response
+                  if [ -z "$KC_ISSUER_CLIENT" ]; then
+                    echo "✓ Vault Access Token created"
+                  else
+                    echo "⚠ Vault Access Client creation failed!!!"
+                    exit 1
+                  fi  
               fi
 
               echo ""
@@ -198,8 +209,10 @@ spec:
                     }
                   }
                 }')
+              
+              echo "Issuer tenant response: $TENANT_RESPONSE"  
 
-              echo "✓ Issuer tenant created"
+              echo "✓ Issuer tenant created or existed"
 
               echo ""
               echo "================================================"
