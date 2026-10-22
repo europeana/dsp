@@ -91,9 +91,15 @@ spec:
 
               # Create Keycloak client for Vault access
               echo "Verifying Vault Access Client"
-              KC_ISSUER_CLIENT_ID=$(curl -sf -X GET "${KC_HOST}/admin/realms/mvd/clients?clientId=${ISSUER_CLIENT_ID}" \
+              KC_ISSUER_CLIENT_RESP=$(curl -sf -X GET "${KC_HOST}/admin/realms/mvd/clients?clientId=${ISSUER_CLIENT_ID}" \
                 -H "Accept: application/json" \
-                -H "Authorization: Bearer ${KC_TOKEN}" | sed -n 's/.*"clientId":"\([^"]*\)".*/\1/p')
+                -H "Authorization: Bearer ${KC_TOKEN}")
+              
+              echo "MVD Clients Response: $KC_ISSUER_CLIENT_RESP"
+                            
+              KC_ISSUER_CLIENT_ID="$KC_ISSUER_CLIENT_RESP" | sed -n 's/.*"clientId":"\([^"]*\)".*/\1/p'
+              echo "extracted client id: $KC_ISSUER_CLIENT_ID"  
+              
               
               if [ "$KC_ISSUER_CLIENT_ID" = "${ISSUER_CLIENT_ID}" ]; then
                 echo "Client for Vault Access exists: $ISSUER_CLIENT_ID, skip creation"
@@ -144,13 +150,14 @@ spec:
                     }
                   ]
                 }')
-                  # verify the issuer client creation response
-                  if [ -n "${KC_ISSUER_CLIENT:-}" ]; then
-                    echo "✓ Vault Access Token created"
-                  else
-                    echo "⚠ Vault Access Client creation failed!!!"
-                    exit 1
-                  fi  
+                
+                # verify the issuer client creation response
+                if [ -n "${KC_ISSUER_CLIENT:-}" ]; then
+                  echo "✓ Vault Access Token created"
+                else
+                  echo "⚠ Vault Access Client creation failed!!!"
+                  exit 1
+                fi  
               fi
 
               echo ""
@@ -159,7 +166,7 @@ spec:
               echo "================================================"
 
               # Get provisioner token
-              PROVISIONER_TOKEN=$(curl -sfv -X POST "${KC_HOST}/realms/mvd/protocol/openid-connect/token" \
+              PROVISIONER_TOKEN=$(curl -sf -X POST "${KC_HOST}/realms/mvd/protocol/openid-connect/token" \
                 -H "Content-Type: application/x-www-form-urlencoded" \
                 -d "grant_type=client_credentials" \
                 -d "client_id=provisioner" \
@@ -211,8 +218,10 @@ spec:
                 }')
               
               STATUS="${TENANT_RESPONSE##*/}"
+              echo "status: $STATUS"
+              
               if [ "$STATUS" = "409" ]; then 
-                echo "⚠ Issuer tenant existed"
+                echo "⚠ EXISTED: Issuer tenant existed"
               elif [ "$STATUS" -ge 400 ]; then 
                 echo "⚠ FAILED: Creation of Issuer tenant: $TENANT_RESPONSE"
               else
@@ -226,7 +235,7 @@ spec:
               echo "================================================"
 
               # Get issuer token
-              ISSUER_TOKEN=$(curl -sfv -X POST "${KC_HOST}/realms/mvd/protocol/openid-connect/token" \
+              ISSUER_TOKEN=$(curl -sf -X POST "${KC_HOST}/realms/mvd/protocol/openid-connect/token" \
                 -H "Content-Type: application/x-www-form-urlencoded" \
                 -d "grant_type=client_credentials" \
                 -d "client_id=issuer" \
@@ -238,13 +247,15 @@ spec:
                 exit 1
               fi
               
-              #verify if attestantion definitions exist
-              ATTESTATION_DEF=$(curl -sfS -w "\nHTTP_STATUS:%{http_code}\n" -X POST "http://issuerservice.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:10013/api/admin/v1alpha/participants/issuer/attestations/query" \
+              echo "verify if attestantion definitions exist"
+              ATTESTATION_DEF=$(curl -sS -w "\nHTTP_STATUS:%{http_code}\n" -X POST "http://issuerservice.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:10013/api/admin/v1alpha/participants/issuer/attestations/query" \
                 -H "Authorization: Bearer ${ISSUER_TOKEN}" \
                 -H "Content-Type: application/json" \
                 -d '{
                   "participantContextId": "issuer"
                 }')
+              
+              echo "Attestation definitions response: $ATTESTATION_DEF"
               
               if [ "$ATTESTATION_DEF" = *'"membership-attestation-def-1"'* ]; then
                 echo "⚠ Attestation Definition existed: membership-attestation-def-1"
@@ -285,7 +296,7 @@ spec:
               echo "Step 4: Create CredentialDefinitions"
               echo "================================================"
 
-              CREDENTIALS_DEF=$(curl -sfS -w "\nHTTP_STATUS:%{http_code}\n" -X POST "http://issuerservice.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:10013/api/admin/v1alpha/participants/issuer/credentialdefinitions" \
+              CREDENTIALS_DEF=$(curl -sS -w "\nHTTP_STATUS:%{http_code}\n" -X POST "http://issuerservice.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:10013/api/admin/v1alpha/participants/issuer/credentialdefinitions" \
                 -H "Authorization: Bearer ${ISSUER_TOKEN}" \
                 -H "Content-Type: application/json" \
                 -d '{
