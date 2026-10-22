@@ -172,7 +172,7 @@ spec:
               fi
 
               # Create issuer tenant
-              TENANT_RESPONSE=$(curl -sfv -X POST "http://issuerservice.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:10015/api/identity/v1alpha/participants" \
+              TENANT_RESPONSE=$(curl -sS -X POST "http://issuerservice.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:10015/api/identity/v1alpha/participants" \
                 -H "Authorization: Bearer ${PROVISIONER_TOKEN}" \
                 -H "Content-Type: application/json" \
                 -d '{
@@ -210,10 +210,16 @@ spec:
                   }
                 }')
               
-              echo "Issuer tenant response: $TENANT_RESPONSE"  
+              STATUS="${TENANT_RESPONSE##*/}"
+              if [ "$STATUS" = "409" ]; then 
+                echo "⚠ Issuer tenant existed"
+              elif [ "$STATUS" -ge 400 ]; then 
+                echo "⚠ FAILED: Creation of Issuer tenant: $TENANT_RESPONSE"
+              else
+                echo "✓ Issuer tenant created"
+              fi    
 
-              echo "✓ Issuer tenant created or existed"
-
+              
               echo ""
               echo "================================================"
               echo "Step 3: Create AttestationDefinitions"
@@ -231,27 +237,46 @@ spec:
                 echo "Failed to get issuer token"
                 exit 1
               fi
-
-              # Create attestation definitions
-              echo "Creating Membership AttestationDefinition"
-              curl -sfS -w "\nHTTP_STATUS:%{http_code}\n" -X POST "http://issuerservice.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:10013/api/admin/v1alpha/participants/issuer/attestations" \
-                -H "Authorization: Bearer ${ISSUER_TOKEN}" \
-                -H "Content-Type: application/json" \
-                -d '{
-                  "attestationType": "membership",
-                  "configuration": {},
-                  "id": "membership-attestation-def-1"
-                }'
               
-              echo "Creating Manufacturer AttestationDefinition"
-              curl -sfS -w "\nHTTP_STATUS:%{http_code}\n" -X POST "http://issuerservice.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:10013/api/admin/v1alpha/participants/issuer/attestations" \
+              #verify if attestantion definitions exist
+              ATTESTATION_DEF=$(curl -sfS -w "\nHTTP_STATUS:%{http_code}\n" -X POST "http://issuerservice.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:10013/api/admin/v1alpha/participants/issuer/attestations/query" \
                 -H "Authorization: Bearer ${ISSUER_TOKEN}" \
                 -H "Content-Type: application/json" \
                 -d '{
-                  "attestationType": "manufacturer",
-                  "configuration": {},
-                  "id": "manufacturer-attestation-def-1"
-                }'
+                  "participantContextId": "issuer"
+                }')
+              
+              if [ "$ATTESTATION_DEF" = *'"membership-attestation-def-1"'* ]; then
+                echo "⚠ Attestation Definition existed: membership-attestation-def-1"
+              else
+                # Create attestation definitions
+                echo "Creating Membership AttestationDefinition"
+                curl -sfS -w "\nHTTP_STATUS:%{http_code}\n" -X POST "http://issuerservice.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:10013/api/admin/v1alpha/participants/issuer/attestations" \
+                  -H "Authorization: Bearer ${ISSUER_TOKEN}" \
+                  -H "Content-Type: application/json" \
+                  -d '{
+                    "attestationType": "membership",
+                    "configuration": {},
+                    "id": "membership-attestation-def-1"
+                  }'
+                echo "✓ AttestationDefinition created: membership-attestation-def-1"  
+              fi
+              
+              if [ "$ATTESTATION_DEF" = *'"manufacturer-attestation-def-1"'* ]; then
+                echo "⚠ Attestation Definition existed: manufacturer-attestation-def-1"
+              else
+                echo "Creating Manufacturer AttestationDefinition"
+                curl -sfS -w "\nHTTP_STATUS:%{http_code}\n" -X POST "http://issuerservice.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:10013/api/admin/v1alpha/participants/issuer/attestations" \
+                  -H "Authorization: Bearer ${ISSUER_TOKEN}" \
+                  -H "Content-Type: application/json" \
+                  -d '{
+                    "attestationType": "manufacturer",
+                    "configuration": {},
+                    "id": "manufacturer-attestation-def-1"
+                  }'
+                  
+                echo "✓ AttestationDefinition created: manufacturer-attestation-def-1"
+              fi
 
               echo "✓ AttestationDefinitions created"
 
@@ -260,80 +285,99 @@ spec:
               echo "Step 4: Create CredentialDefinitions"
               echo "================================================"
 
-              # Create credential definitions
-              echo "Creating Membership CredentialDefinition"
-              curl -sfS -w "\nHTTP_STATUS:%{http_code}\n" -X POST "http://issuerservice.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:10013/api/admin/v1alpha/participants/issuer/credentialdefinitions" \
+              CREDENTIALS_DEF=$(curl -sfS -w "\nHTTP_STATUS:%{http_code}\n" -X POST "http://issuerservice.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:10013/api/admin/v1alpha/participants/issuer/credentialdefinitions" \
                 -H "Authorization: Bearer ${ISSUER_TOKEN}" \
                 -H "Content-Type: application/json" \
                 -d '{
-                  "attestations": ["membership-attestation-def-1"],
-                  "credentialType": "MembershipCredential",
-                  "id": "membership-credential-def",
-                  "jsonSchema": "{}",
-                  "jsonSchemaUrl": "https://example.com/schema/membership-credential.json",
-                  "mappings": [
-                    {
-                      "input": "membership",
-                      "output": "credentialSubject.membership",
-                      "required": true
-                    },
-                    {
-                      "input": "membershipType",
-                      "output": "credentialSubject.membershipType",
-                      "required": "true"
-                    },
-                    {
-                      "input": "membershipStartDate",
-                      "output": "credentialSubject.membershipStartDate",
-                      "required": true
-                    },
-                    {
-                      "input": "id",
-                      "output": "credentialSubject.id",
-                      "required": true
-                    }
-                  ],
-                  "rules": [],
-                  "format": "VC2_0_JOSE",
-                  "validity": "604800"
-                }'
+                  "participantContextId": "issuer"
+                }')
               
-              echo "Creating Manufacturer CredentialDefinition"
-              curl -sfS -w "\nHTTP_STATUS:%{http_code}\n" -X POST "http://issuerservice.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:10013/api/admin/v1alpha/participants/issuer/credentialdefinitions" \
-                -H "Authorization: Bearer ${ISSUER_TOKEN}" \
-                -H "Content-Type: application/json" \
-                -d '{
-                  "attestations": ["manufacturer-attestation-def-1"],
-                  "credentialType": "ManufacturerCredential",
-                  "id": "manufacturer-credential-def",
-                  "jsonSchema": "{}",
-                  "jsonSchemaUrl": "https://example.com/schema/manufacturer-credential.json",
-                  "mappings": [
-                    {
-                      "input": "contractVersion",
-                      "output": "credentialSubject.contractVersion",
-                      "required": true
-                    },
-                    {
-                      "input": "component_types",
-                      "output": "credentialSubject.part_types",
-                      "required": "true"
-                    },
-                    {
-                      "input": "since",
-                      "output": "credentialSubject.since",
-                      "required": true
-                    },
-                    {
-                      "input": "id",
-                      "output": "credentialSubject.id",
-                      "required": true
-                    }
-                  ],
-                  "rules": [],
-                  "format": "VC2_0_JOSE",
-                  "validity": "604800"
-                }'
+              if [ "$CREDENTIALS_DEF" = *'"membership-credential-def"'* ]; then
+                echo "⚠ Membership CredentialDefinition existed: membership-credential-def"
+              else
+                           
+                # Create credential definitions
+                echo "Creating Membership CredentialDefinition"
+                curl -sfS -w "\nHTTP_STATUS:%{http_code}\n" -X POST "http://issuerservice.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:10013/api/admin/v1alpha/participants/issuer/credentialdefinitions" \
+                  -H "Authorization: Bearer ${ISSUER_TOKEN}" \
+                  -H "Content-Type: application/json" \
+                  -d '{
+                    "attestations": ["membership-attestation-def-1"],
+                    "credentialType": "MembershipCredential",
+                    "id": "membership-credential-def",
+                    "jsonSchema": "{}",
+                    "jsonSchemaUrl": "https://example.com/schema/membership-credential.json",
+                    "mappings": [
+                      {
+                        "input": "membership",
+                        "output": "credentialSubject.membership",
+                        "required": true
+                      },
+                      {
+                        "input": "membershipType",
+                        "output": "credentialSubject.membershipType",
+                        "required": "true"
+                      },
+                      {
+                        "input": "membershipStartDate",
+                        "output": "credentialSubject.membershipStartDate",
+                        "required": true
+                      },
+                      {
+                        "input": "id",
+                        "output": "credentialSubject.id",
+                        "required": true
+                      }
+                    ],
+                    "rules": [],
+                    "format": "VC2_0_JOSE",
+                    "validity": "604800"
+                  }'
+                 echo "✓ Membership CredentialDefinition created: "membership-credential-def"  
+              fi
+              
+              if [ "$CREDENTIALS_DEF" = *'"manufacturer-credential-def"'* ]; then
+                echo "⚠ Membership CredentialDefinition existed: manufacturer-credential-def"
+              else
+                          
+                echo "Creating Manufacturer CredentialDefinition"
+                curl -sfS -w "\nHTTP_STATUS:%{http_code}\n" -X POST "http://issuerservice.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:10013/api/admin/v1alpha/participants/issuer/credentialdefinitions" \
+                  -H "Authorization: Bearer ${ISSUER_TOKEN}" \
+                  -H "Content-Type: application/json" \
+                  -d '{
+                    "attestations": ["manufacturer-attestation-def-1"],
+                    "credentialType": "ManufacturerCredential",
+                    "id": "manufacturer-credential-def",
+                    "jsonSchema": "{}",
+                    "jsonSchemaUrl": "https://example.com/schema/manufacturer-credential.json",
+                    "mappings": [
+                      {
+                        "input": "contractVersion",
+                        "output": "credentialSubject.contractVersion",
+                        "required": true
+                      },
+                      {
+                        "input": "component_types",
+                        "output": "credentialSubject.part_types",
+                        "required": "true"
+                      },
+                      {
+                        "input": "since",
+                        "output": "credentialSubject.since",
+                        "required": true
+                      },
+                      {
+                        "input": "id",
+                        "output": "credentialSubject.id",
+                        "required": true
+                      }
+                    ],
+                    "rules": [],
+                    "format": "VC2_0_JOSE",
+                    "validity": "604800"
+                  }'
+                echo "✓ Membership CredentialDefinition created: manufacturer-credential-def"  
+              fi    
 
               echo "✓ CredentialDefinition created"
               echo ""
