@@ -144,7 +144,7 @@ spec:
                     }
                   ]
                 }')
-                  # verify the client creation response
+                  # verify the issuer client creation response
                   if [ -z "$KC_ISSUER_CLIENT" ]; then
                     echo "✓ Vault Access Token created"
                   else
