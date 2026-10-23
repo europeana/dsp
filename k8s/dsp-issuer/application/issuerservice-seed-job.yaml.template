@@ -25,6 +25,7 @@ metadata:
     type: edc-job-${ENVIRONMENT}
 spec:
   backoffLimit: 3
+  ttlSecondsAfterFinished: 3600
   template:
     metadata:
       labels:
@@ -222,9 +223,9 @@ spec:
               STATUS=$(echo "$TENANT_RESPONSE" | tail -n 1)  # last line is the status
               echo "status: $STATUS"
               
-              if [ "$STATUS:-500" = "409" ]; then 
+              if [ "$STATUS" = "409" ]; then 
                 echo "⚠ EXISTED: Issuer tenant existed"
-              elif [ "$STATUS:-500" -ge 400 ]; then 
+              elif [ "$STATUS" -ge 400 ]; then 
                 echo "⚠ FAILED: Creation of Issuer tenant: $TENANT_RESPONSE"
               else
                 echo "✓ Issuer tenant created"
@@ -242,7 +243,9 @@ spec:
                 -d "grant_type=client_credentials" \
                 -d "client_id=issuer" \
                 -d "client_secret=issuer-secret" | sed -n 's/.*"access_token":"\([^"]*\)".*/\1/p')
-  
+                
+              echo: "$ISSUER_TOKEN"
+              
               #keep all scopes
               #\  -d "scope=issuer-admin-api:write,issuer-admin-api:read"
                
@@ -254,6 +257,7 @@ spec:
               echo "verify if attestantion definitions exist"
               ATTESTATION_DEF=$(curl -sS -w "\nHTTP_STATUS:%{http_code}\n" -X POST "http://issuerservice.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:10013/api/admin/v1alpha/participants/issuer/attestations/query" \
                 -H "Authorization: Bearer ${ISSUER_TOKEN}" \
+                -H "Accept: application/json" \
                 -H "Content-Type: application/json" \
                 -d '{
                   "participantContextId": "issuer"
