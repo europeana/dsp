@@ -26,7 +26,7 @@ metadata:
 spec:
   backoffLimit: 3
   #enable for debuging purposes (e.g. keep logs available for longer time)
-  ttlSecondsAfterFinished: 3600
+  ttlSecondsAfterFinished: 600
   template:
     metadata:
       labels:
@@ -34,7 +34,7 @@ spec:
         platform: edcv
         type: edc-job-${ENVIRONMENT}
     spec:
-      restartPolicy: Never
+      restartPolicy: OnFailure
       initContainers:
         # Wait for issuerservice to be ready
         - name: wait-for-issuerservice
@@ -245,10 +245,9 @@ spec:
                 -d "client_id=issuer" \
                 -d "scope=issuer-admin-api:write issuer-admin-api:read" \
                 -d "client_secret=issuer-secret" | sed -n 's/.*"access_token":"\([^"]*\)".*/\1/p')
-                
-              
-               
-              echo "Fetched issuer token: ${ISSUER_TOKEN}"
+                            
+              #can be used for debugging purposes
+              #echo "Fetched issuer token: ${ISSUER_TOKEN}"
               
               if [ -z "$ISSUER_TOKEN" ]; then
                 echo "Failed to get issuer token"
@@ -298,7 +297,7 @@ spec:
                 echo "✓ AttestationDefinition created: manufacturer-attestation-def-1"
               fi
 
-              echo "✓ AttestationDefinitions created"
+              echo "✓ AttestationDefinitions available in issuer service"
 
               echo ""
               echo "================================================"
@@ -399,7 +398,8 @@ spec:
                 echo "✓ Membership CredentialDefinition created: manufacturer-credential-def"  
               fi    
 
-              echo "✓ CredentialDefinition created"
+              echo "✓ CredentialDefinition available in issuer service"
+              
               echo ""
               echo "================================================"
               echo "IssuerService seeding completed successfully!"
