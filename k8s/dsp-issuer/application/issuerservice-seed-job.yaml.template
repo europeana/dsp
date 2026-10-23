@@ -312,7 +312,7 @@ spec:
                   "participantContextId": "issuer"
                 }')
               
-              if [ "$CREDENTIALS_DEF" = *'"membership-credential-def"'* ]; then
+              if [[ "$CREDENTIALS_DEF" = *'"membership-credential-def"'* ]]; then
                 echo "⚠ Membership CredentialDefinition existed: membership-credential-def"
               else
                            
