@@ -246,8 +246,9 @@ spec:
                 -d "client_secret=issuer-secret" | sed -n 's/.*"access_token":"\([^"]*\)".*/\1/p')
               #keep all scopes
               #\  -d "scope=issuer-admin-api:write,issuer-admin-api:read"
+              
                
-              echo: "issuer token: $ISSUER_TOKEN"
+              echo "Fetched issuer token: ${ISSUER_TOKEN}"
               
               if [ -z "$ISSUER_TOKEN" ]; then
                 echo "Failed to get issuer token"
