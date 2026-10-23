@@ -219,13 +219,12 @@ spec:
               
               
               echo "tenant response: $TENANT_RESPONSE"
-              STATUS="${TENANT_RESPONSE##*$'\n'} # last line is the status (everything after the last newline) 
-             
+              STATUS=$(echo "$TENANT_RESPONSE" | tail -n 1)  # last line is the status
               echo "status: $STATUS"
               
-              if [ "$STATUS" = "409" ]; then 
+              if [ "$STATUS:-500" = "409" ]; then 
                 echo "⚠ EXISTED: Issuer tenant existed"
-              elif [ "$STATUS" -ge 400 ]; then 
+              elif [ "$STATUS:-500" -ge 400 ]; then 
                 echo "⚠ FAILED: Creation of Issuer tenant: $TENANT_RESPONSE"
               else
                 echo "✓ Issuer tenant created"
@@ -262,7 +261,7 @@ spec:
               
               echo "Attestation definitions response: $ATTESTATION_DEF"
               
-              if [ "$ATTESTATION_DEF" = *'"membership-attestation-def-1"'* ]; then
+              if [[ "$ATTESTATION_DEF" = *'"membership-attestation-def-1"'* ]]; then
                 echo "⚠ Attestation Definition existed: membership-attestation-def-1"
               else
                 # Create attestation definitions
@@ -278,7 +277,7 @@ spec:
                 echo "✓ AttestationDefinition created: membership-attestation-def-1"  
               fi
               
-              if [ "$ATTESTATION_DEF" = *'"manufacturer-attestation-def-1"'* ]; then
+              if [[ "$ATTESTATION_DEF" = *'"manufacturer-attestation-def-1"'* ]]; then
                 echo "⚠ Attestation Definition existed: manufacturer-attestation-def-1"
               else
                 echo "Creating Manufacturer AttestationDefinition"
@@ -352,7 +351,7 @@ spec:
                  echo "✓ Membership CredentialDefinition created: "membership-credential-def"  
               fi
               
-              if [ "$CREDENTIALS_DEF" = *'"manufacturer-credential-def"'* ]; then
+              if [[ "$CREDENTIALS_DEF" = *'"manufacturer-credential-def"'* ]]; then
                 echo "⚠ Membership CredentialDefinition existed: manufacturer-credential-def"
               else
                           
