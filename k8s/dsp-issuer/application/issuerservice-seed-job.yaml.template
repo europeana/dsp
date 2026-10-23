@@ -218,8 +218,8 @@ spec:
                 }')
               
               
-              echo "tenant response: $STATUS"
-              STATUS=" ${TENANT_RESPONSE##*$'\n'} # last line is the status (everything after the last newline) 
+              echo "tenant response: $TENANT_RESPONSE"
+              STATUS="${TENANT_RESPONSE##*$'\n'} # last line is the status (everything after the last newline) 
              
               echo "status: $STATUS"
               
