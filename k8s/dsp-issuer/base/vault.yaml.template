@@ -49,6 +49,8 @@ spec:
           volumeMounts:
             - name: vault-config
               mountPath: /vault/config/vault.hcl
+              subPath: vault.hcl
+              readOnly: true
       volumes:
         - name: vault-config
           configMap:
