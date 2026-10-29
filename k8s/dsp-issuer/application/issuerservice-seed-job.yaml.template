@@ -26,7 +26,7 @@ metadata:
 spec:
   backoffLimit: 3
   #enable for debuging purposes (e.g. keep logs available for longer time)
-  ttlSecondsAfterFinished: 600
+  ttlSecondsAfterFinished: ${JOB_RETENTION_AFTER_FINISHED}
   template:
     metadata:
       labels:
@@ -34,7 +34,7 @@ spec:
         platform: edcv
         type: edc-job-${ENVIRONMENT}
     spec:
-      restartPolicy: OnFailure
+      restartPolicy: ${JOB_RESTART_POLICY}
       initContainers:
         # Wait for issuerservice to be ready
         - name: wait-for-issuerservice
