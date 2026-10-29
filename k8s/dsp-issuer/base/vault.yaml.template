@@ -111,7 +111,8 @@ spec:
             - |
               # Wait for vault to be ready
               echo "Waiting for Vault to be ready..."
-              until vault status > /dev/null 2>&1; do
+              #until vault status > /dev/null 2>&1; do
+              until vault status; do
                 echo "Vault not ready yet, retrying in 2 seconds..."
                 sleep 2
               done
