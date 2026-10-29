@@ -42,12 +42,13 @@ spec:
               value: "0.0.0.0:8200"
             - name: SKIP_SETCAP
               value: "true"
+          securityContext:
+            capabilities:
+              add:
+                - IPC_LOCK
           volumeMounts:
             - name: vault-config
               mountPath: /vault/config/vault.hcl
-          capabilities:
-            add:
-              - IPC_LOCK
       volumes:
         - name: vault-config
           configMap:
