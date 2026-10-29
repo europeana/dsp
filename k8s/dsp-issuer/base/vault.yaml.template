@@ -73,6 +73,11 @@ data: # kv format
       connection_url = "${ISSUERVAULT_PG_DB_URL}"
     }
     disable_mlock = true
+    listener "tcp" {
+      # Ändere 127.0.0.1:8200 auf 0.0.0.0:8200
+      address     = "0.0.0.0:8200"
+      tls_disable = "true"
+    }
   
 ---
 apiVersion: batch/v1
