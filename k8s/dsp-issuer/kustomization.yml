@@ -20,3 +20,8 @@ resources:
   - application/issuerservice-seed-job.yaml
   
 #  - base/postgres.yaml
+#generate config mapping for log4j2.xml file
+configMapGenerator:
+  - name: issuervault-env
+    files:
+      - base/issuervault-env.properties

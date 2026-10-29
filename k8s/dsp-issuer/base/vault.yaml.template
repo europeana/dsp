@@ -35,13 +35,8 @@ spec:
           imagePullPolicy: ${IMAGE_PULL_POLICY}
           ports:
             - containerPort: 8200
-          env:
-            - name: VAULT_DEV_ROOT_TOKEN_ID
-              value: "root"
-            - name: VAULT_DEV_LISTEN_ADDRESS
-              value: "0.0.0.0:8200"
-            - name: SKIP_SETCAP
-              value: "true"
+          envFrom:
+            - configMapRef: { name: issuervault-env }
           securityContext:
             capabilities:
               add:
