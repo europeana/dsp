@@ -33,19 +33,26 @@ spec:
         - name: vault
           image: hashicorp/vault:2.0.0
           imagePullPolicy: ${IMAGE_PULL_POLICY}
+          #a avoid starting in default dev modus, can be switched back by adding -dev to args 
+          command: ["vault"]
+          args: ["server", "-config=/vault/config/vault.hcl"]
           ports:
             - containerPort: 8200
-          env:
-            - name: VAULT_DEV_ROOT_TOKEN_ID
-              value: "root"
-            - name: VAULT_DEV_LISTEN_ADDRESS
-              value: "0.0.0.0:8200"
-            - name: SKIP_SETCAP
-              value: "true"
+          envFrom:
+            - configMapRef: { name: issuervault-env }
           securityContext:
             capabilities:
               add:
                 - IPC_LOCK
+          volumeMounts:
+            - name: vault-config
+              mountPath: /vault/config/vault.hcl
+              subPath: vault.hcl
+              readOnly: true
+      volumes:
+        - name: vault-config
+          configMap:
+            name: issuervault-config
 
 ---
 apiVersion: v1
@@ -54,6 +61,19 @@ metadata:
   name: vault-auth
   namespace: dsp-issuer-${ENVIRONMENT}
 
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: issuervault-config
+  namespace: dsp-issuer-${ENVIRONMENT}
+data: # kv format
+  vault.hcl: | 
+    storage "postgresql" {
+      connection_url = "${ISSUERVAULT_PG_DB_URL}"
+    }
+    disable_mlock = true
+  
 ---
 apiVersion: batch/v1
 kind: Job

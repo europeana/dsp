@@ -49,8 +49,8 @@ data:
   #edc.datasource.default.password: "ih"
   
   edc.datasource.default.url: "${CONSUMER_IH_DB_URL}"
-  edc.datasource.default.user: "${CONSUMER_IH_USER}"
-  edc.datasource.default.password: "${CONSUMER_IH_PASS}"
+  edc.datasource.default.user: "${CONSUMER_IH_DB_USER}"
+  edc.datasource.default.password: "${CONSUMER_IH_DB_PASS}"
   edc.sql.schema.autocreate: "true"
   
   
