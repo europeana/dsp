@@ -45,9 +45,9 @@ spec:
           volumeMounts:
             - name: vault-config
               mountPath: /vault/config/vault.hcl
-            capabilities:
-              add:
-                - IPC_LOCK
+          capabilities:
+            add:
+              - IPC_LOCK
       volumes:
         - name: vault-config
           configMap:
