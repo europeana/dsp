@@ -10,6 +10,14 @@
 # Contributors:
 #      Metaform Systems, Inc. - initial API and implementation
 #
+#  - base/postgres.yaml
+#generate config mapping for log4j2.xml file
+configMapGenerator:
+  - name: issuervault-env
+    envs:
+      - issuervault-env.properties
+
+namespace: dsp-issuer-test
 
 resources:
   - base/namespace.yaml
@@ -19,9 +27,3 @@ resources:
   - application/issuerservice.yaml
   - application/issuerservice-seed-job.yaml
   
-#  - base/postgres.yaml
-#generate config mapping for log4j2.xml file
-configMapGenerator:
-  - name: issuervault-env
-    files:
-      - base/issuervault-env.properties

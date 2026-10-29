@@ -3,5 +3,7 @@
 #VAULT_DEV_ROOT_TOKEN_ID: #"root"
 #VAULT_DEV_LISTEN_ADDRESS: #"0.0.0.0:8200"
 
-#other env variables  
+#other env variables
+VAULT_LOG_LEVEL=debug
+VAULT_API_ADDR="0.0.0.0:8200"  
 SKIP_SETCAP:"true"
