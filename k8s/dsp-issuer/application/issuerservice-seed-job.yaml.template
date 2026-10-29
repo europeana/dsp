@@ -352,7 +352,7 @@ spec:
                     "format": "VC2_0_JOSE",
                     "validity": "604800"
                   }'
-                 echo "✓ Membership CredentialDefinition created: "membership-credential-def"  
+                 echo "✓ Membership CredentialDefinition created: membership-credential-def"  
               fi
               
               if [[ "$CREDENTIALS_DEF" = *'"manufacturer-credential-def"'* ]]; then
