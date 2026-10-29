@@ -33,6 +33,9 @@ spec:
         - name: vault
           image: hashicorp/vault:2.0.0
           imagePullPolicy: ${IMAGE_PULL_POLICY}
+          #a avoid starting in default dev modus, can be switched back by adding -dev to args 
+          command: ["vault"]
+          args: ["server", "-config=/vault/config/vault.hcl"]
           ports:
             - containerPort: 8200
           envFrom:
