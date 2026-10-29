@@ -72,6 +72,7 @@ data: # kv format
     storage "postgresql" {
       connection_url = "${ISSUERVAULT_PG_DB_URL}"
     }
+    disable_mlock = true
   
 ---
 apiVersion: batch/v1
