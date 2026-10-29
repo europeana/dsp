@@ -42,10 +42,16 @@ spec:
               value: "0.0.0.0:8200"
             - name: SKIP_SETCAP
               value: "true"
-          securityContext:
+          volumeMounts:
+            - name: vault-config
+              mountPath: /vault/config/vault.hcl
             capabilities:
               add:
                 - IPC_LOCK
+      volumes:
+        - name: vault-config
+          configMap:
+            name: issuervault-config
 
 ---
 apiVersion: v1
@@ -54,6 +60,18 @@ metadata:
   name: vault-auth
   namespace: dsp-issuer-${ENVIRONMENT}
 
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: issuervault-config
+  namespace: dsp-issuer-${ENVIRONMENT}
+data:
+  # kv format
+  storage "postgresql" {
+    connection_url = "${ISSUERVAULT_PG_DB_URL}"
+  }
+  
 ---
 apiVersion: batch/v1
 kind: Job
