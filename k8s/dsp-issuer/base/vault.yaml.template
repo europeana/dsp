@@ -67,11 +67,11 @@ kind: ConfigMap
 metadata:
   name: issuervault-config
   namespace: dsp-issuer-${ENVIRONMENT}
-data:
-  # kv format
-  storage "postgresql" {
-    connection_url = "${ISSUERVAULT_PG_DB_URL}"
-  }
+data: # kv format
+  vault.hcl: | 
+    storage "postgresql" {
+      connection_url = "${ISSUERVAULT_PG_DB_URL}"
+    }
   
 ---
 apiVersion: batch/v1
