@@ -33,17 +33,20 @@ spec:
         - name: vault
           image: hashicorp/vault:2.0.0
           imagePullPolicy: ${IMAGE_PULL_POLICY}
-          #a avoid starting in default dev modus, can be switched back by adding -dev to args 
-          command: ["vault"]
-          args: ["server", "-config=/vault/config/vault.hcl"]
           ports:
             - containerPort: 8200
-          envFrom:
-            - configMapRef: { name: issuervault-env }
           securityContext:
             capabilities:
               add:
                 - IPC_LOCK
+          envFrom:
+            - configMapRef: { name: issuervault-env }
+          command: ["vault"]
+          #a avoid starting in default dev modus, can be switched back by adding -dev to args 
+          args:
+            - "server"
+            - "-config=/vault/config/vault.hcl"
+            #- "-dev"
           volumeMounts:
             - name: vault-config
               mountPath: /vault/config/vault.hcl
@@ -74,7 +77,7 @@ data: # kv format
     }
     disable_mlock = true
     listener "tcp" {
-      # Ändere 127.0.0.1:8200 auf 0.0.0.0:8200
+      # Change default 127.0.0.1:8200 to 0.0.0.0:8200
       address     = "0.0.0.0:8200"
       tls_disable = "true"
     }
@@ -93,6 +96,7 @@ spec:
         type: edc-job-${ENVIRONMENT}
     spec:
       serviceAccountName: vault-auth
+      restartPolicy: OnFailure
       containers:
         - name: vault-cli
           image: hashicorp/vault:2.0.0
@@ -204,8 +208,6 @@ spec:
               EOF
               
               echo "Vault bootstrap completed successfully!"
-      restartPolicy: OnFailure
-
 
 
 ---
