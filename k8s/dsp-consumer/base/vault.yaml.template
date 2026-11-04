@@ -40,7 +40,7 @@ spec:
               add:
                 - IPC_LOCK
           envFrom:
-            - configMapRef: { name: cosumervault-env }
+            - configMapRef: { name: consumervault-env }
           command: ["vault"]
           #a avoid starting in default dev modus, can be switched back by adding -dev to args 
           args:
