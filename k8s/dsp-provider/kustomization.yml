@@ -10,6 +10,12 @@
 # Contributors:
 #      Metaform Systems, Inc. - initial API and implementation
 #
+configMapGenerator:
+  - name: providervault-env
+    envs:
+      - providervault-env.properties
+
+namespace: provider-test
 
 resources:
   - base/namespace.yaml
