@@ -128,6 +128,14 @@ spec:
           command: [ "sh", "-ec" ]
           args:
             - |
+              #0 Wait for Keycloak to be ready
+              echo "Waiting for Keycloak to be ready..."
+              until wget -q --spider http://keycloak.dsp-common-${ENVIRONMENT}.svc.cluster.local:8080/realms/mvd/.well-known/openid-configuration > /dev/null 2>&1; do
+                echo "Keycloak not ready yet, retrying in 2 seconds..."
+                sleep 2
+              done
+              echo "Keycloak is ready!"
+                            
               # Wait for vault to be ready
               echo "Waiting for Vault to be ready..."
               #until vault status > /dev/null 2>&1; do
@@ -182,14 +190,6 @@ spec:
                 exit 1
               fi
               echo "Vault is ready!"
-              
-              # Wait for Keycloak to be ready
-              echo "Waiting for Keycloak to be ready..."
-              until wget -q --spider http://keycloak.dsp-common-${ENVIRONMENT}.svc.cluster.local:8080/realms/mvd/.well-known/openid-configuration > /dev/null 2>&1; do
-                echo "Keycloak not ready yet, retrying in 2 seconds..."
-                sleep 2
-              done
-              echo "Keycloak is ready!"
               
               #4. ensure JWT auth method enabled
               #vault auth enable jwt || true
