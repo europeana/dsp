@@ -149,7 +149,8 @@ spec:
               VAULT_STATUS=""
               until [ "$IS_UP" = "true" ]; do
                 echo "Reading vault status"
-                VAULT_STATUS=$(vault status -format=json 2>&1)
+                #ensure the status reading doesn't fail (ignore return code)
+                VAULT_STATUS=$(vault status -format=json 2>&1) || true
                 echo "$VAULT_STATUS"
                 case "$VAULT_STATUS" in
                   "{"*) 
