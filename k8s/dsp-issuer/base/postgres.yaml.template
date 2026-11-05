@@ -74,7 +74,7 @@ data:
     GRANT ALL PRIVILEGES ON DATABASE issuerservice TO issuer;
     \c issuerservice
     GRANT ALL ON SCHEMA public TO issuer;
-
+    -- SG: redundant, keykloak db is in common namespace
     CREATE DATABASE keycloak;
     CREATE USER kc WITH PASSWORD 'kc';
     GRANT ALL PRIVILEGES ON DATABASE keycloak TO kc;

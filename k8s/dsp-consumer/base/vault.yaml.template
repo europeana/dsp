@@ -39,16 +39,23 @@ spec:
             capabilities:
               add:
                 - IPC_LOCK
-          env:
-            - name: VAULT_DEV_ROOT_TOKEN_ID
-              value: "root"
-            - name: VAULT_DEV_LISTEN_ADDRESS
-              value: "0.0.0.0:8200"
-            - name: SKIP_SETCAP
-              value: "true"
+          envFrom:
+            - configMapRef: { name: consumervault-env }
+          command: ["vault"]
+          #a avoid starting in default dev modus, can be switched back by adding -dev to args 
           args:
             - "server"
-            - "-dev"
+            - "-config=/vault/config/vault.hcl"
+            #- "-dev"
+          volumeMounts:
+            - name: vault-config
+              mountPath: /vault/config/vault.hcl
+              subPath: vault.hcl
+              readOnly: true
+      volumes:
+        - name: vault-config
+          configMap:
+            name: consumervault-config
 
 ---
 apiVersion: v1
@@ -58,19 +65,38 @@ metadata:
   namespace: consumer-${ENVIRONMENT}
 
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: consumervault-config
+  namespace: consumer-${ENVIRONMENT}
+data: # kv format
+  vault.hcl: | 
+    storage "postgresql" {
+      connection_url = "${CONSUMERVAULT_PG_DB_URL}"
+    }
+    disable_mlock = true
+    listener "tcp" {
+      # Change 127.0.0.1:8200 to 0.0.0.0:8200
+      address     = "0.0.0.0:8200"
+      tls_disable = "true"
+    }
+  
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: vault-bootstrap
   namespace: consumer-${ENVIRONMENT}
 spec:
-  backoffLimit: 3
+  backoffLimit: 5
   template:
     metadata:
       labels:
         type: edc-job-${ENVIRONMENT}
     spec:
       serviceAccountName: vault-auth
+      restartPolicy: OnFailure
       containers:
         - name: vault-cli
           image: hashicorp/vault:2.0.0
@@ -89,7 +115,8 @@ spec:
             - |
               # Wait for vault to be ready
               echo "Waiting for Vault to be ready..."
-              until vault status > /dev/null 2>&1; do
+              #until vault status > /dev/null 2>&1; do
+              until vault status; do
                 echo "Vault not ready yet, retrying in 2 seconds..."
                 sleep 2
               done
@@ -181,8 +208,6 @@ spec:
               EOF
               
               echo "Vault bootstrap completed successfully!"
-      restartPolicy: OnFailure
-
 
 ---
 apiVersion: v1

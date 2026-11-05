@@ -10,12 +10,17 @@
 # Contributors:
 #      Metaform Systems, Inc. - initial API and implementation
 #
+configMapGenerator:
+  - name: consumervault-env
+    envs:
+      - consumervault-env.properties
 
+namespace: consumer-test
+      
 resources:
   - base/namespace.yaml
   - base/vault.yaml
   - base/gateway.yaml
-  - base/postgres.yaml
   - application/controlplane-config.yaml
   - application/controlplane.yaml
   - application/controlplane-seed.yaml
@@ -24,3 +29,5 @@ resources:
   - application/identityhub-config.yaml
   - application/identityhub.yaml
   - application/identityhub-seed.yaml
+  
+  #  - base/postgres.yaml

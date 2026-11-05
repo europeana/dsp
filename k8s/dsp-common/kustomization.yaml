@@ -16,6 +16,6 @@ resources:
   - gateway-class.yaml
   - gateway.yaml
   - gateway.secret.yaml
-  - postgres.yaml
   - keycloak.yaml
   
+#  - postgres.yaml

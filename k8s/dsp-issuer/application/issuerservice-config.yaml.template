@@ -43,11 +43,17 @@ data:
   edc.vault.hashicorp.url: "http://vault.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:8200"
   edc.vault.hashicorp.token: "root"
 
-  edc.datasource.default.url: "jdbc:postgresql://postgres.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:5432/issuerservice"
-  edc.datasource.default.user: "issuer"
-  edc.datasource.default.password: "issuer"
+  edc.datasource.default.url: "${ISSUER_PG_DB_URL}"
+  edc.datasource.default.user: "${ISSUER_PG_DB_USER}"
+  edc.datasource.default.password: "${ISSUER_PG_DB_PASS}"
   edc.sql.schema.autocreate: "true"
   edc.iam.accesstoken.jti.validation: "true"
+
+  # even though we have a default data source, we need a named datasource for the DatabaseAttestationSource, because
+  # that is configured in the AttestationDefinition
+  edc.datasource.membership.url: "${ISSUER_PG_DB_URL}"
+  edc.datasource.membership.user: "${ISSUER_PG_DB_USER}"
+  edc.datasource.membership.password: "${ISSUER_PG_DB_PASS}"
 
   edc.encryption.aes.key.alias: "aes-key-alias"
   # Oauth2 config
@@ -60,8 +66,4 @@ data:
 
   JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044"
 
-  # even though we have a default data source, we need a named datasource for the DatabaseAttestationSource, because
-  # that is configured in the AttestationDefinition
-  edc.datasource.membership.url: "jdbc:postgresql://postgres.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:5432/issuerservice"
-  edc.datasource.membership.user: "issuer"
-  edc.datasource.membership.password: "issuer"
+  
