@@ -140,11 +140,12 @@ spec:
               IS_UP="false"
               VAULT_STATUS=""
               until [ "$IS_UP" = "true" ]; do
+                echo "Reading vault status"
                 VAULT_STATUS=$(vault status -format=json 2>&1)
                 echo "$VAULT_STATUS"
                 case "$VAULT_STATUS" in
                   "{"*) 
-                    echo "Vault is up!"
+                    echo "Vault is up and responding with valid JSON!"
                     IS_UP="true"
                     ;;
                   *)
@@ -208,6 +209,12 @@ spec:
                 vault write auth/jwt/config \
                   jwks_url="http://keycloak.dsp-common-${ENVIRONMENT}.svc.cluster.local:8080/realms/mvd/protocol/openid-connect/certs" \
                   default_role="participant" || { echo "Failed to configure JWT auth."; exit 1; }
+                
+                if [ $? -ne 0 ]; then
+                  echo "Critical Error: Failed to configure JWT auth."
+                  exit 1
+                fi  
+                  
               fi    
               
               #6. ensure mount for participants, each stores their secrets in a subdirectory
@@ -235,7 +242,7 @@ spec:
 
               #8. Ensure full CRUD + list on the participant's own data path
               # vault write behaves as create or update
-              cat <<EOF | vault policy write participants-restricted - || { echo "Failed to write policy"; exit 1; }
+              cat <<"EOF" | vault policy write participants-restricted - || { echo "Failed to write policy"; exit 1; }
               path "participants/data/{{identity.entity.aliases.${ACCESSOR}.name}}/*" {
                   capabilities = ["create", "read", "update", "delete", "list"]
               }
@@ -262,7 +269,7 @@ spec:
               
               
               # 10. Allow full CRUD + list for provisioner
-              cat <<EOF | vault policy write provisioner-policy - || { echo "Failed to write policy"; exit 1; }
+              cat <<"EOF" | vault policy write provisioner-policy - || { echo "Failed to write policy"; exit 1; }
               path "*" {
                 capabilities = ["create", "read", "update", "delete", "list", "sudo"]
               }
