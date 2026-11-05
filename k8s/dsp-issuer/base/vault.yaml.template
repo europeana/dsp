@@ -71,8 +71,10 @@ metadata:
   name: vault-unseal-key
   namespace: dsp-issuer-${ENVIRONMENT}
 type: Opaque
+#make sure that no empty spaces exist in the values
 stringData:
   unsealkey: $ISSUER_VAULT_KEY
+  roottoken: $ISSUER_VAULT_ROOT_TOKEN
     
 ---
 apiVersion: v1
@@ -115,7 +117,10 @@ spec:
             - name: VAULT_ADDR
               value: "http://vault.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:8200"
             - name: VAULT_TOKEN
-              value: "root"
+              valueFrom:
+                secretKeyRef:
+                  name: vault-unseal-key
+                  key: roottoken
             - name: VAULT_UNSEAL_KEY
               valueFrom:
                 secretKeyRef:
