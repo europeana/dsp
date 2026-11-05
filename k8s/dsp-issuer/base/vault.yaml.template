@@ -149,8 +149,7 @@ spec:
               VAULT_STATUS=""
               until [ "$IS_UP" = "true" ]; do
                 echo "Reading vault status"
-                #force returning non error code (true)
-                VAULT_STATUS=$(vault status -format=json 2>&1) || true
+                VAULT_STATUS=$(vault status -format=json 2>&1)
                 echo "$VAULT_STATUS"
                 case "$VAULT_STATUS" in
                   "{"*) 
@@ -165,8 +164,8 @@ spec:
               done
               
               #2. verify if initialized 
-              IS_INIT=$(echo "$VAULT_STATUS" | grep -o '"initialized": [a-z]*' | cut -d' ' -f2)
-              IS_SEALED=$(echo "$VAULT_STATUS" | grep -o '"sealed": [a-z]*' | cut -d' ' -f2)
+              IS_INIT=$(echo "$VAULT_STATUS" | awk -F'"initialized":' '{print $2}' | awk -F',' '{print $1}' | tr -d ' "[:space:]')
+              IS_SEALED=IS_SEALED=$(echo "$VAULT_STATUS" | awk -F'"sealed":' '{print $2}' | awk -F',' '{print $1}' | tr -d ' "[:space:]')
                 
               if [ "$IS_INITIALIZED" = "false" ]; then
                 echo "Critical Error: Vault is NOT initialized yet. Unseal is not possible."
