@@ -165,7 +165,7 @@ spec:
               done
               
               #2. verify if initialized 
-              IS_INIT=$(echo "$VAULT_STATUS" | grep -o '"initialized": [a-z]*' | cut -d' '-f2)
+              IS_INIT=$(echo "$VAULT_STATUS" | grep -o '"initialized": [a-z]*' | cut -d' ' -f2)
               IS_SEALED=$(echo "$VAULT_STATUS" | grep -o '"sealed": [a-z]*' | cut -d' ' -f2)
                 
               if [ "$IS_INITIALIZED" = "false" ]; then
