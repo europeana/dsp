@@ -304,7 +304,7 @@ spec:
               echo "Step 4: Create CredentialDefinitions"
               echo "================================================"
 
-              CREDENTIALS_DEF=$(curl -sS -w "\nHTTP_STATUS:%{http_code}\n" -X POST "http://issuerservice.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:10013/api/admin/v1alpha/participants/issuer/credentialdefinitions" \
+              CREDENTIALS_DEF=$(curl -sS -w "\nHTTP_STATUS:%{http_code}\n" -X POST "http://issuerservice.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:10013/api/admin/v1alpha/participants/issuer/credentialdefinitions/query" \
                 -H "Authorization: Bearer ${ISSUER_TOKEN}" \
                 -H "Content-Type: application/json" \
                 -d '{
