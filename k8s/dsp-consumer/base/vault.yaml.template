@@ -66,6 +66,18 @@ metadata:
 
 ---
 apiVersion: v1
+kind: Secret
+metadata:
+  name: vault-unseal-key
+  namespace: consumer-${ENVIRONMENT}
+type: Opaque
+#make sure that no empty spaces exist in the values
+stringData:
+  unsealkey: $CONSUMER_VAULT_KEY
+  roottoken: $CONSUMER_VAULT_ROOT_TOKEN
+    
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: consumervault-config
@@ -96,33 +108,32 @@ spec:
         type: edc-job-${ENVIRONMENT}
     spec:
       serviceAccountName: vault-auth
-      restartPolicy: OnFailure
+      restartPolicy: ${JOB_RESTART_POLICY}
       containers:
         - name: vault-cli
           image: hashicorp/vault:2.0.0
           imagePullPolicy: ${IMAGE_PULL_POLICY}
-          securityContext:
-            capabilities:
-              add:
-                - IPC_LOCK
           env:
             - name: VAULT_ADDR
               value: "http://vault.consumer-${ENVIRONMENT}.svc.cluster.local:8200"
             - name: VAULT_TOKEN
-              value: "root"
+              valueFrom:
+                secretKeyRef:
+                  name: vault-unseal-key
+                  key: roottoken
+            - name: VAULT_UNSEAL_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: vault-unseal-key
+                  key: unsealkey  
+          securityContext:
+            capabilities:
+              add:
+                - IPC_LOCK
           command: [ "sh", "-ec" ]
           args:
             - |
-              # Wait for vault to be ready
-              echo "Waiting for Vault to be ready..."
-              #until vault status > /dev/null 2>&1; do
-              until vault status; do
-                echo "Vault not ready yet, retrying in 2 seconds..."
-                sleep 2
-              done
-              echo "Vault is ready!"
-              
-              # Wait for Keycloak to be ready
+              #0 Wait for Keycloak to be ready
               echo "Waiting for Keycloak to be ready..."
               until wget -q --spider http://keycloak.dsp-common-${ENVIRONMENT}.svc.cluster.local:8080/realms/mvd/.well-known/openid-configuration > /dev/null 2>&1; do
                 echo "Keycloak not ready yet, retrying in 2 seconds..."
@@ -130,18 +141,98 @@ spec:
               done
               echo "Keycloak is ready!"
               
-              # Enable JWT auth method
-              vault auth enable jwt || true
+              # Wait for vault to be ready
+              echo "Waiting for Vault to be ready..."
+                            
+              #1. verify if vault status is available
+              IS_UP="false"
+              VAULT_STATUS=""
+              until [ "$IS_UP" = "true" ]; do
+                echo "Reading vault status"
+                #ensure the status reading doesn't fail (ignore return code)
+                VAULT_STATUS=$(vault status -format=json 2>&1) || true
+                echo "$VAULT_STATUS"
+                case "$VAULT_STATUS" in
+                  "{"*) 
+                    echo "Vault is up and responding with valid JSON!"
+                    IS_UP="true"
+                    ;;
+                  *)
+                    echo "Vault status not available yet, retrying in 2 seconds..."
+                    sleep 2
+                    ;;
+                esac
+              done
+              
+              #2. verify if initialized 
+              IS_INITIALIZED=$(echo "$VAULT_STATUS" | awk -F'"initialized":' '{print $2}' | awk -F',' '{print $1}' | tr -d ' "[:space:]')
+              IS_SEALED=$(echo "$VAULT_STATUS" | awk -F'"sealed":' '{print $2}' | awk -F',' '{print $1}' | tr -d ' "[:space:]')
+                
+              if [ "$IS_INITIALIZED" = "false" ]; then
+                echo "Critical Error: Vault is NOT initialized yet. Unseal is not possible."
+                echo "Please initialize Vault first using 'vault operator init'."
+                exit 1
+              elif [ "$IS_INITIALIZED" = "true" ]; then
+                echo "Vault is initialized. Proceeding to seal check..."
+              else
+                echo "Error: Could not parse 'initialized' field (Value: '$IS_INITIALIZED')."
+                exit 1
+              fi
+              
+              #3. Unseal Vault
+              if [ "$IS_SEALED" = "false" ]; then
+                echo "Vault is unsealed."
+                exit 0
+              elif [ "$IS_SEALED" = "true" ]; then
+                echo "Vault is sealed. Initiating unseal process..."
+                vault operator unseal "$VAULT_UNSEAL_KEY"
+              else
+                echo "Error: Could not parse 'sealed' field (Value: '$IS_SEALED')."
+                exit 1
+              fi
+              echo "Vault is ready!"
+              
+              #4. ensure JWT auth method enabled
+              #vault auth enable jwt || true
+              AUTH_LIST=$(vault auth list -format=json 2>&1)
+              if echo "$AUTH_LIST" | grep -q '"jwt/"'; then
+                echo "JWT authentication method allready ENABLED at 'jwt/'."
+              else
+                vault auth enable jwt
+                echo "JWT authentication method ENABLED"
+              fi
 
-              # Configure JWT auth (example: using Keycloak as JWT backend)
-              vault write auth/jwt/config \
-                jwks_url="http://keycloak.dsp-common-${ENVIRONMENT}.svc.cluster.local:8080/realms/mvd/protocol/openid-connect/certs" \
-                default_role="participant" || { echo "Failed to configure JWT auth: need to revert back to ERROR:  exit 1;"; exit 1;}
-
-              # create mount for participants, each stores their secrets in a subdirectory
-              vault secrets enable -path=participants -version=2 kv || { echo "Failed to enable secrets engine: : need to revert back to ERROR:  exit 1;"; exit 1; }
-
-              # get accessor for entity aliases
+              #5. Configure JWT auth (example: using Keycloak as JWT backend)
+              if vault read auth/jwt/config >/dev/null 2>&1; then
+                echo "JWT configuration already exists. Skipping write setup."
+              else
+                echo "Writing JWT configuration..."
+                vault write auth/jwt/config \
+                  jwks_url="http://keycloak.dsp-common-${ENVIRONMENT}.svc.cluster.local:8080/realms/mvd/protocol/openid-connect/certs" \
+                  default_role="participant" || { echo "Failed to configure JWT auth."; exit 1; }
+                
+                if [ $? -ne 0 ]; then
+                  echo "Critical Error: Failed to configure JWT auth."
+                  exit 1
+                fi  
+                  
+              fi    
+              
+              #6. ensure mount for participants, each stores their secrets in a subdirectory
+              #vault secrets enable -path=participants -version=2 kv || { echo "Failed to enable secrets engine: : Need to ad back exit 1"; }
+              if vault secrets list -format=json | grep -q '"participants/"'; then
+                echo "Secrets engine at path 'participants/' already exists. Skipping setup."
+              else
+                vault secrets enable -path=participants -version=2 kv
+                if [ $? -eq 0 ]; then
+                  echo "Successfully enabled KV-V2 secrets engine at path 'participants/'."
+                else
+                  echo "Critical Error: Failed to enable secrets engine at path 'participants/'."
+                  exit 1
+                fi
+              fi    
+              
+              #7. get accessor for entity aliases
               ACCESSOR=$(vault auth list | grep 'jwt/' | awk '{print $3}')
               if [ -z "$ACCESSOR" ]; then
                 echo "Failed to get JWT accessor"
@@ -150,9 +241,9 @@ spec:
               echo "Using JWT accessor: $ACCESSOR"
 
 
-              # Allow full CRUD + list on the participant's own data path
-
-              cat <<EOF | vault policy write participants-restricted - || { echo "Failed to write policy"; exit 1; }
+              #8. Ensure full CRUD + list on the participant's own data path
+              # vault write behaves as create or update
+              cat <<"EOF" | vault policy write participants-restricted - || { echo "Failed to write policy"; exit 1; }
               path "participants/data/{{identity.entity.aliases.${ACCESSOR}.name}}/*" {
                   capabilities = ["create", "read", "update", "delete", "list"]
               }
@@ -162,6 +253,8 @@ spec:
               }
               EOF
 
+              #9. Create or update the 'participant' Role
+              # vault write behaves as create or update
               vault write auth/jwt/role/participant -<<EOF || { echo "Failed to create JWT role"; exit 1; }
               {
                 "role_type": "jwt",
@@ -176,8 +269,8 @@ spec:
               EOF
               
               
-              # Allow full CRUD + list for provisioner
-              cat <<EOF | vault policy write provisioner-policy - || { echo "Failed to write policy"; exit 1; }
+              # 10. Allow full CRUD + list for provisioner
+              cat <<"EOF" | vault policy write provisioner-policy - || { echo "Failed to write policy"; exit 1; }
               path "*" {
                 capabilities = ["create", "read", "update", "delete", "list", "sudo"]
               }
@@ -187,6 +280,7 @@ spec:
               }
               EOF
               
+              # 11. Create or update 'provisioner' role 
               vault write auth/jwt/role/provisioner -<<EOF || { echo "Failed to create provisioner JWT role"; exit 1; }
               {
                 "role_type": "jwt",
@@ -199,6 +293,8 @@ spec:
                 "clock_skew_leeway": 60
               }
               EOF
+              
+              # 12. Create or update 'AES' key
               vault write secret/data/aes-key-alias -<<EOF || { echo "Failed to create ase key entry"; exit 1; }
               {
                 "data": {
