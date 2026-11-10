@@ -75,7 +75,7 @@ type: Opaque
 stringData:
   unsealkey: $ISSUER_VAULT_KEY
   roottoken: $ISSUER_VAULT_ROOT_TOKEN
-    
+  
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -125,7 +125,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: vault-unseal-key
-                  key: unsealkey  
+                  key: unsealkey
           securityContext:
             capabilities:
               add:
@@ -182,7 +182,6 @@ spec:
               #3. Unseal Vault
               if [ "$IS_SEALED" = "false" ]; then
                 echo "Vault is unsealed."
-                exit 0
               elif [ "$IS_SEALED" = "true" ]; then
                 echo "Vault is sealed. Initiating unseal process..."
                 vault operator unseal "$VAULT_UNSEAL_KEY"
@@ -295,13 +294,17 @@ spec:
               EOF
               
               # 12. Create or update 'AES' key
-              vault write secret/data/aes-key-alias -<<EOF || { echo "Failed to create ase key entry"; exit 1; }
-              {
-                "data": {
-                  "content": "yHo9w6m2KOI3FE7vI+fcN6j86JDQ6V10lJPlv9lLWoE="
-                }
-              }
-              EOF
+              vault write secret/data/aes-key-alias content="yHo9w6m2KOI3FE7vI+fcN6j86JDQ6V10lJPlv9lLWoE=" || { echo "Failed to create AES key entry"; exit 1; }
+              echo "AES key alias created!"
+              
+              
+              #vault write secret/data/aes-key-alias -<<EOF || { echo "Failed to create ase key entry"; exit 1; }
+              #{
+              #  "data": {
+              #    "content": "yHo9w6m2KOI3FE7vI+fcN6j86JDQ6V10lJPlv9lLWoE="
+              #  }
+              #}
+              #EOF
               
               echo "Vault bootstrap completed successfully!"
 
