@@ -294,17 +294,24 @@ spec:
               EOF
               
               # 12. Create or update 'AES' key
-              vault write secret/data/aes-key-alias content="yHo9w6m2KOI3FE7vI+fcN6j86JDQ6V10lJPlv9lLWoE=" || { echo "Failed to create AES key entry"; exit 1; }
-              echo "AES key alias created!"
+              SECRET_PATH="secret"
+              SECRET_VALUE="yHo9w6m2KOI3FE7vI+fcN6j86JDQ6V10lJPlv9lLWoE="
+              #ensure secrets engine is enabled
+              if vault secrets list | grep -E "^${SECRET_PATH}/[[:space:]]+kv" >/dev/null 2>&1; then
+                echo "The Secrets Engine already enabled under the path '${SECRET_PATH}/'"
+              else
+                vault secrets enable -path="${SECRET_PATH}" kv-v2
+                echo "Successfully enabled secrets engine with version: KV-v2 and path: '${SECRET_PATH}/'"
+              fi
               
               
-              #vault write secret/data/aes-key-alias -<<EOF || { echo "Failed to create ase key entry"; exit 1; }
-              #{
-              #  "data": {
-              #    "content": "yHo9w6m2KOI3FE7vI+fcN6j86JDQ6V10lJPlv9lLWoE="
-              #  }
-              #}
-              #EOF
+              vault write secret/data/aes-key-alias -<<EOF || { echo "Failed to create ase key entry"; exit 1; }
+              {
+                "data": {
+                  "content": "$SECRET_VALUE"
+                }
+              }
+              EOF
               
               echo "Vault bootstrap completed successfully!"
 
