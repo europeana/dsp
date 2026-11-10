@@ -46,7 +46,7 @@ spec:
           args:
             - "server"
             - "-config=/vault/config/vault.hcl"
-            #- "-dev"
+            - "-dev"
           volumeMounts:
             - name: vault-config
               mountPath: /vault/config/vault.hcl
@@ -75,7 +75,7 @@ type: Opaque
 stringData:
   unsealkey: $CONSUMER_VAULT_KEY
   roottoken: $CONSUMER_VAULT_ROOT_TOKEN
-    
+
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -125,7 +125,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: vault-unseal-key
-                  key: unsealkey  
+                  key: unsealkey
           securityContext:
             capabilities:
               add:
@@ -194,7 +194,7 @@ spec:
               
               #4. ensure JWT auth method enabled
               #vault auth enable jwt || true
-              AUTH_LIST=$(vault auth list -format=json 2>&1)
+              AUTH_LIST=$(vault auth list -format=json 2>&1) || true
               if echo "$AUTH_LIST" | grep -q '"jwt/"'; then
                 echo "JWT authentication method allready ENABLED at 'jwt/'."
               else
