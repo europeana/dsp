@@ -35,7 +35,7 @@ data:
   JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044"
 
   edc.vault.hashicorp.url: "http://vault.provider-${ENVIRONMENT}.svc.cluster.local:8200"
-  edc.vault.hashicorp.token: "root"
+  edc.vault.hashicorp.token: "$PROVIDER_VAULT_ROOT_TOKEN"
 
   #edc.datasource.default.url: "jdbc:postgresql://postgres.provider-${ENVIRONMENT}.svc.cluster.local:5432/identityhub"
   #edc.datasource.default.user: "ih"

@@ -42,7 +42,7 @@ data:
   #OTEL_RESOURCE_ATTRIBUTES: "service.name=ih-consumer-${ENVIRONMENT},deployment.environment=${ENVIRONMENT}"
 
   edc.vault.hashicorp.url: "http://vault.consumer-${ENVIRONMENT}.svc.cluster.local:8200"
-  edc.vault.hashicorp.token: "root"
+  edc.vault.hashicorp.token: "$CONSUMER_VAULT_ROOT_TOKEN"
 
   #edc.datasource.default.url: "jdbc:postgresql://postgres.consumer-${ENVIRONMENT}.svc.cluster.local:5432/identityhub"
   #edc.datasource.default.user: "ih"

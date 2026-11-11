@@ -21,7 +21,7 @@ data:
   # base config
   edc.hostname: "controlplane.consumer-${ENVIRONMENT}.svc.cluster.local"
   edc.vault.hashicorp.url: "http://vault.consumer-${ENVIRONMENT}.svc.cluster.local:8200"
-  edc.vault.hashicorp.token: "root"
+  edc.vault.hashicorp.token: "$CONSUMER_VAULT_ROOT_TOKEN"
   edc.participant.id: "did:web:identityhub.consumer-${ENVIRONMENT}.svc.cluster.local%3A7083:consumer"
   edc.iam.did.web.use.https: "false"
   edc.iam.credential.revocation.mimetype: "application/json"

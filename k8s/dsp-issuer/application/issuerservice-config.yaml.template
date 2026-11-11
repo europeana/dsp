@@ -41,7 +41,7 @@ data:
 
   # persistence and vault
   edc.vault.hashicorp.url: "http://vault.dsp-issuer-${ENVIRONMENT}.svc.cluster.local:8200"
-  edc.vault.hashicorp.token: "root"
+  edc.vault.hashicorp.token: "$ISSUER_VAULT_ROOT_TOKEN"
 
   edc.datasource.default.url: "${ISSUER_PG_DB_URL}"
   edc.datasource.default.user: "${ISSUER_PG_DB_USER}"
