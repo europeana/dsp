@@ -22,6 +22,7 @@ dependencies {
     implementation(project(":extensions:signaling-auth-none"))
     implementation(project(":extensions:jsonld-context-extension"))
     implementation(project(":extensions:catalog-metadata-extension"))
+    implementation(project(":extensions:sql-schema-extension"))
     implementation(libs.edc.boot)
     implementation(libs.edc.core.runtime)
     implementation(libs.edc.ext.http)

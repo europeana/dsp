@@ -91,6 +91,9 @@ edc-sql-transactionlocal = { module = "org.eclipse.edc:transaction-local", versi
 edc-sql-dataplane-instancestore = { module = "org.eclipse.edc:data-plane-instance-store-sql", version.ref = "edc" }
 edc-store-participantcontext-config-sql = { module = "org.eclipse.edc:participantcontext-config-store-sql", version.ref = "edc" }
 edc-cel-store-sql = { module = "org.eclipse.edc:cel-store-sql", version.ref = "edc" }
+edc-sql-bootstrapper = {module = "org.eclipse.edc:sql-bootstrapper", version.ref ="edc" }
+edc-core-spi = { module = "org.eclipse.edc:core-spi", version.ref = "edc" }
+edc-transaction-datasource-spi = { module = "org.eclipse.edc:transaction-datasource-spi", version.ref = "edc" }
 
 # identityhub SPI modules
 edc-ih-spi-did = { module = "org.eclipse.edc:did-spi", version.ref = "edc" }
