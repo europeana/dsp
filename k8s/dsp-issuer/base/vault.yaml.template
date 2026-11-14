@@ -248,7 +248,7 @@ spec:
               }
 
               path "participants/metadata/{{identity.entity.aliases.${ACCESSOR}.name}}/*" {
-                   capabilities = ["list"]
+                   capabilities = ["read", "delete", "list"]
               }
               EOF
 

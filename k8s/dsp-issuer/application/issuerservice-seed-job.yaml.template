@@ -55,7 +55,7 @@ spec:
               echo "Waiting for Keycloak to be ready..."
               until wget -q --spider http://keycloak.dsp-common-${ENVIRONMENT}.svc.cluster.local:8080/realms/mvd/.well-known/openid-configuration > /dev/null 2>&1; do
                 echo "Keycloak not ready yet, retrying in 2 seconds..."
-                sleep 2
+                sleep 3
               done
               echo "Keycloak is ready!"
       containers:
@@ -90,6 +90,8 @@ spec:
                 echo "Failed to get Keycloak admin token"
                 exit 1
               fi
+              
+              #NOTE: vault needs to be unsealed first, should check vault status, still it is likely that the vault initialization and unsealing is completed by now 
 
               # Create Keycloak client for Vault access
               echo "Verifying Vault Access Client"
@@ -155,7 +157,8 @@ spec:
                 
                 # verify the issuer client creation response
                 if [ -n "${KC_ISSUER_CLIENT:-}" ]; then
-                  echo "✓ Vault Access Token created"
+                  echo "✓ Vault Access Token created. "
+                  echo "Response: $KC_ISSUER_CLIENT"
                 else
                   echo "⚠ Vault Access Client creation failed!!!"
                   exit 1
@@ -230,7 +233,10 @@ spec:
                 echo "⚠ FAILED: Creation of Issuer tenant: $TENANT_RESPONSE"
               else
                 echo "✓ Issuer tenant created"
-              fi    
+              fi 
+              
+              # activate issuer tenant (should create the vault secrets and publish the DID)
+                 
 
               
               echo ""
