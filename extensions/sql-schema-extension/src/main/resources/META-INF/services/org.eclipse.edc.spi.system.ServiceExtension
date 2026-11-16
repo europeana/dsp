@@ -12,4 +12,4 @@
 #
 #
 
-eu.europeana.dsp.controlplane.store.sql.EuropeanaSqlSchemaExtension
+eu.europeana.dsp.controlplane.extension.EuropeanaSqlAssetIndexServiceExtension

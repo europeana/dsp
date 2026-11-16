@@ -26,4 +26,6 @@ dependencies {
     api(libs.edc.controlplane.transaction.spi)
     api(libs.commons.lang3)
     api(libs.edc.controlplane.transform)
+
+    implementation(project(":extensions:europeana-dsp-common"))
 }

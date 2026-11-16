@@ -24,4 +24,10 @@ dependencies {
     api(libs.edc.sql.bootstrapper)
     api(libs.edc.transaction.datasource.spi)
     api(libs.edc.lib.sql)
+    api(libs.edc.controlplane.services)
+    api(libs.edc.asset.api)
+    api(libs.edc.spi.web)
+
+    implementation(project(":extensions:europeana-dsp-common"))
+
 }

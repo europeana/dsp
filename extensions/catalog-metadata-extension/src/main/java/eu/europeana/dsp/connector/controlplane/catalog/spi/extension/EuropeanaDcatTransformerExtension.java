@@ -1,6 +1,7 @@
 package eu.europeana.dsp.connector.controlplane.catalog.spi.extension;
 
 import eu.europeana.dsp.connector.controlplane.catalog.spi.transformer.from.JsonObjectFromEuropeanaDcatDistributionTransformer;
+import eu.europeana.dsp.connector.controlplane.catalog.spi.transformer.to.JsonObjectToEuropeanaDcatDistributionTransformer;
 import jakarta.json.Json;
 import org.eclipse.edc.jsonld.spi.JsonLd;
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
@@ -13,6 +14,16 @@ import java.util.Map;
 
 import static eu.europeana.dsp.connector.controlplane.catalog.spi.DspVocabulary.DSP_TRANSFORMER_CONTEXT_V_2025_1;
 
+/**
+ * Service extension that registers Europeana DCAT distribution JSON-LD transformers.
+ *
+ * The extension contributes transformers for converting Europeana DCAT distribution
+ * model instances to JSON objects and for converting JSON objects back to
+ * Europeana DCAT distribution instances.
+ *
+ * @author Srishti Singh
+ * @since 2026-09-16
+ */
 @Extension(EuropeanaDcatTransformerExtension.NAME)
 public class EuropeanaDcatTransformerExtension implements ServiceExtension {
 
@@ -33,10 +44,25 @@ public class EuropeanaDcatTransformerExtension implements ServiceExtension {
     public void initialize(ServiceExtensionContext context) {
         context.getMonitor().info("Initializing " + NAME);
         var jsonFactory = Json.createBuilderFactory(Map.of());
+
         transformerRegistry
                 .forContext(DSP_TRANSFORMER_CONTEXT_V_2025_1)
                 .register(
                         new JsonObjectFromEuropeanaDcatDistributionTransformer(jsonFactory)
+                );
+
+        transformerRegistry
+                .forContext(DSP_TRANSFORMER_CONTEXT_V_2025_1)
+                .register(
+                        new JsonObjectToEuropeanaDcatDistributionTransformer()
+                );
+
+        // Also registering in management-api transformer context. As we would need a JSON-to-Europeana
+        // DCAT distribution transformer while doing Asset Transformation
+        transformerRegistry
+                .forContext("management-api")
+                .register(
+                        new JsonObjectToEuropeanaDcatDistributionTransformer()
                 );
     }
 }
