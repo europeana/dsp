@@ -207,6 +207,7 @@ spec:
                     }
                   },
                   "additionalProperties": {
+                    "edc.vault.hashicorp.api.secret.path": "v1/participants",
                     "edc.vault.hashicorp.config": {
                       "credentials": {
                         "clientId": "'"${ISSUER_CLIENT_ID}"'",

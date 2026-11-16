@@ -242,7 +242,7 @@ spec:
 
               #8. Ensure full CRUD + list on the participant's own data path
               # vault write behaves as create or update
-              cat <<"EOF" | vault policy write participants-restricted - || { echo "Failed to write policy"; exit 1; }
+              cat <<EOF | vault policy write participants-restricted - || { echo "Failed to write policy"; exit 1; }
               path "participants/data/{{identity.entity.aliases.${ACCESSOR}.name}}/*" {
                   capabilities = ["create", "read", "update", "delete", "list"]
               }
