@@ -18,6 +18,12 @@ CREATE TABLE IF NOT EXISTS edc_distribution
     properties JSON,
     data_address JSON,
     participant_context_id VARCHAR,
+
     CONSTRAINT uq_edc_distribution_asset_slug
-    UNIQUE (asset_id, distribution_id)
+    UNIQUE (asset_id, distribution_id),
+
+    CONSTRAINT fk_edc_distribution_asset
+    FOREIGN KEY (asset_id)
+    REFERENCES edc_asset(asset_id)
+    ON DELETE CASCADE
     );
