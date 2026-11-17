@@ -1,0 +1,24 @@
+meta {
+  name: KC - GET(Verify) Client copy
+  type: http
+  seq: 7
+}
+
+get {
+  url: http://keycloak.localhost:8080/admin/realms/mvd/clients/provisioner/secret
+  body: formUrlEncoded
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJWaDl3SS1zbEdVRVExWVE1TS0yT1ltNmViT204TDVrYkJjdkVLbGJTM0QwIn0.eyJleHAiOjE3OTI2NjY3NzEsImlhdCI6MTc5MjY2NjcxMSwianRpIjoib25sdHJvOjRmZTRjNGI2LWE4NjUtZjg3NC01ZmFjLTFlZjUwZmViNGExMSIsImlzcyI6Imh0dHA6Ly9rZXljbG9hay5tdmQtY29tbW9uLnN2Yy5jbHVzdGVyLmxvY2FsOjgwODAvcmVhbG1zL21hc3RlciIsInR5cCI6IkJlYXJlciIsImF6cCI6ImFkbWluLWNsaSIsInNpZCI6IlpjX1c3M0E4eFBId2FvTERFVVNreTlEUyIsInNjb3BlIjoiZW1haWwgcHJvZmlsZSJ9.FeM9c3y10c61fCIaU3p9lIzpJfPJ2W5vARjL7me3pxu72kC2RSPbrUO0FraXgTJDyuht9FvCtMkCVQaPfgYWhVKgRxINR2iCEEQaPUdMSh3tSJ7FwS7_WMH0VO9-JKsmZ_W16ewZCD25YQFr0ihcl-fW2mMJLuOPw1oiYebhkYSbIpE_rB65-r4l0e5xDAefDCrPsX_R8c62HXOa0uAbUQhBJcAcFimKUcpjoUVYBBOs54u20SYuYYUgf2fbTZVMZ2K-M2eSQxDVl8p8KR_nT-_gMwJL0Fx5gTOp0M9Sxk4skjzuJ78k20MQL9E7nLbvDYwZ2Gy2dV1tkh87lDWKzg
+}
+
+body:form-urlencoded {
+  clientId: issuer
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

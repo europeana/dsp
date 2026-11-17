@@ -1,0 +1,24 @@
+meta {
+  name: KC - GET All Clients copy
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://keycloak.localhost:8080/admin/realms/mvd/clients/
+  body: formUrlEncoded
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJWaDl3SS1zbEdVRVExWVE1TS0yT1ltNmViT204TDVrYkJjdkVLbGJTM0QwIn0.eyJleHAiOjE3OTI2NjgwNTYsImlhdCI6MTc5MjY2Nzk5NiwianRpIjoib25sdHJvOmU4MjFlOGY5LTVmNWEtMTAyZS1kMTMxLWFjOGVmNWE0MWU4YSIsImlzcyI6Imh0dHA6Ly9rZXljbG9hay5tdmQtY29tbW9uLnN2Yy5jbHVzdGVyLmxvY2FsOjgwODAvcmVhbG1zL21hc3RlciIsInR5cCI6IkJlYXJlciIsImF6cCI6ImFkbWluLWNsaSIsInNpZCI6IldXSVh2bEc5UkdHRnBaNEl1bWI5RGFuTiIsInNjb3BlIjoiZW1haWwgcHJvZmlsZSJ9.BcXh_aWWhUF0h1rUFRX7yXUtxMT1JxhPd93l8gAnWPkQeFdrO_fB2K8rhBh-OIbqpBcTb1pt_31C7YmvZHxEUVUQWSd0jNvh4tE--r36Kscz7PhJ1VBfI7Wzp-IyJxXFEm3BjAuXwDUrwttzNNB8BJ2fVcqXjVncglLQy6LqIY5FjEji-hSiSFo6WntPc16FVMCri5YzubkUhICM9OHVGCuTzdVgZcqPXOzPU6Ey4yTL2nkFAEdw5ifm2BaY6N1mPo0Ap5yBdjOEVXVHyHEfBgL-GicgAtZdnDIdgbBV-FuxYSBL_uRZjDb5cHEGTbwdGNP-NQ3jqpWWc9mjNQ4hrw
+}
+
+body:form-urlencoded {
+  clientId: issuer
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

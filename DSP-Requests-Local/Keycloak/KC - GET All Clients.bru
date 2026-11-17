@@ -1,0 +1,28 @@
+meta {
+  name: KC - GET All Clients
+  type: http
+  seq: 7
+}
+
+get {
+  url: http://keycloak.localhost:8080/admin/realms/mvd/clients/?clientId=issuer
+  body: formUrlEncoded
+  auth: bearer
+}
+
+params:query {
+  clientId: issuer
+}
+
+auth:bearer {
+  token: {{KC_ADMIN_TOKEN}}
+}
+
+body:form-urlencoded {
+  ~clientId: issuer
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
