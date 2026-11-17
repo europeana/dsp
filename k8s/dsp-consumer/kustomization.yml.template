@@ -10,20 +10,24 @@
 # Contributors:
 #      Metaform Systems, Inc. - initial API and implementation
 #
-#  - base/postgres.yaml
-#generate config mapping for log4j2.xml file
 configMapGenerator:
-  - name: issuervault-env
+  - name: consumervault-env
     envs:
-      - issuervault-env.properties
+      - consumervault-env.properties
 
-namespace: dsp-issuer-test
-
+namespace: consumer-${ENVIRONMENT}
+      
 resources:
   - base/namespace.yaml
   - base/vault.yaml
   - base/gateway.yaml
-  - application/issuerservice-config.yaml
-  - application/issuerservice.yaml
-  - application/issuerservice-seed-job.yaml
+  - application/controlplane-config.yaml
+  - application/controlplane.yaml
+  - application/controlplane-seed.yaml
+  - application/dataplane-config.yaml
+  - application/dataplane.yaml
+  - application/identityhub-config.yaml
+  - application/identityhub.yaml
+  - application/identityhub-seed.yaml
   
+  #  - base/postgres.yaml

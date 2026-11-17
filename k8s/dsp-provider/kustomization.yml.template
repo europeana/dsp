@@ -11,12 +11,12 @@
 #      Metaform Systems, Inc. - initial API and implementation
 #
 configMapGenerator:
-  - name: consumervault-env
+  - name: providervault-env
     envs:
-      - consumervault-env.properties
+      - providervault-env.properties
 
-namespace: consumer-test
-      
+namespace: provider-${ENVIRONMENT}
+
 resources:
   - base/namespace.yaml
   - base/vault.yaml
@@ -30,4 +30,4 @@ resources:
   - application/identityhub.yaml
   - application/identityhub-seed.yaml
   
-  #  - base/postgres.yaml
+#  - base/postgres.yaml
