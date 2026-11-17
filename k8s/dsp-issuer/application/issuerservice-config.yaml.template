@@ -65,5 +65,4 @@ data:
   edc.iam.oauth2.jwks.url: "http://keycloak.dsp-common-${ENVIRONMENT}.svc.cluster.local:8080/realms/mvd/protocol/openid-connect/certs"
 
   JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044"
-
   

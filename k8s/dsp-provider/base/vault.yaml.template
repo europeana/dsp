@@ -46,7 +46,6 @@ spec:
           args:
             - "server"
             - "-config=/vault/config/vault.hcl"
-            #- "-dev"
           volumeMounts:
             - name: vault-config
               mountPath: /vault/config/vault.hcl

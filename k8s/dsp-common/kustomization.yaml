@@ -17,5 +17,3 @@ resources:
   - gateway.yaml
   - gateway.secret.yaml
   - keycloak.yaml
-  
-#  - postgres.yaml

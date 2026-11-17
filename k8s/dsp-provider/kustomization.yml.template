@@ -29,5 +29,3 @@ resources:
   - application/identityhub-config.yaml
   - application/identityhub.yaml
   - application/identityhub-seed.yaml
-  
-#  - base/postgres.yaml

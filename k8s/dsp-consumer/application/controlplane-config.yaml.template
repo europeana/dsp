@@ -77,7 +77,7 @@ data:
   edc.catalog.description: "Europeana datasets available through DSP"
   edc.catalog.publisher: "Europeana Foundation"
   
-  #disable catalog crawling (SG: assuming that is only relevant when federated catalog is enabled)
+  #disable catalog crawling (only used with federated catalog)
   edc.catalog.cache.execution.enabled: "false"
 
   # for context loading in http and https
