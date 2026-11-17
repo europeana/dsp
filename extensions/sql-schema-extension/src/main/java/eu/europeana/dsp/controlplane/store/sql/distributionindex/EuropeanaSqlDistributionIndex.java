@@ -3,6 +3,7 @@ package eu.europeana.dsp.controlplane.store.sql.distributionindex;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europeana.dsp.connector.controlplane.catalog.spi.definitions.EuropeanaDistribution;
 import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
+import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.sql.store.AbstractSqlStore;
@@ -10,7 +11,10 @@ import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -34,6 +38,30 @@ public class EuropeanaSqlDistributionIndex extends AbstractSqlStore {
             EuropeanaDistributionStatements statements) {
         super(dataSourceRegistry, dataSourceName, transactionContext, objectMapper, queryExecutor);
         this.statements = Objects.requireNonNull(statements);
+    }
+
+    /**
+     * Finds all Europeana distribution records associated with the specified asset identifier.
+     *
+     * @param assetId the identifier of the asset whose distributions are to be retrieved
+     * @return the list of Europeana distributions associated with the specified asset, ordered by creation time
+     * @throws NullPointerException if assetId is null
+     * @throws EdcPersistenceException if an SQL error occurs while retrieving the distributions
+     */
+    public List<EuropeanaDistribution> findByAssetId(String assetId) {
+        try (var connection = getConnection()) {
+            Objects.requireNonNull(assetId);
+            return queryExecutor.query(
+                    connection,
+                    true,
+                    this::mapDistribution,
+                    statements.getFindDistributionsByAssetIdTemplate(),
+                    assetId
+            ).toList();
+        } catch (SQLException e) {
+            throw new EdcPersistenceException(e);
+        }
+
     }
 
     /**
@@ -63,5 +91,31 @@ public class EuropeanaSqlDistributionIndex extends AbstractSqlStore {
                     asset.getParticipantContextId()
             );
         }
+    }
+
+    private EuropeanaDistribution mapDistribution(ResultSet resultSet) throws SQLException {
+        Map<String, Object> dataAddressProperties = fromJson(
+                resultSet.getString(statements.getDataAddressColumn()),
+                getTypeRef()
+        );
+
+        var dataAddress = Optional.ofNullable(dataAddressProperties)
+                .map(it -> DataAddress.Builder.newInstance()
+                        .properties(it)
+                        .build())
+                .orElse(null);
+
+        var distribution = new EuropeanaDistribution(
+                resultSet.getString(statements.getDistributionIdColumn())
+        );
+
+        distribution.setProperties(fromJson(
+                resultSet.getString(statements.getPropertiesColumn()),
+                getTypeRef()
+        ));
+
+        distribution.setDataAddress(dataAddress);
+
+        return distribution;
     }
 }

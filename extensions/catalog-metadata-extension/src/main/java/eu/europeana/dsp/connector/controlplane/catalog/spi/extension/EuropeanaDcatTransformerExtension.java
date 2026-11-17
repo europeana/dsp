@@ -8,11 +8,13 @@ import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
+import org.eclipse.edc.spi.types.TypeManager;
 import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 
 import java.util.Map;
 
 import static eu.europeana.dsp.connector.controlplane.catalog.spi.DspVocabulary.DSP_TRANSFORMER_CONTEXT_V_2025_1;
+import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 
 /**
  * Service extension that registers Europeana DCAT distribution JSON-LD transformers.
@@ -33,6 +35,9 @@ public class EuropeanaDcatTransformerExtension implements ServiceExtension {
     private JsonLd jsonLd;
 
     @Inject
+    TypeManager typeManager;
+
+    @Inject
     private TypeTransformerRegistry transformerRegistry;
 
     @Override
@@ -48,7 +53,7 @@ public class EuropeanaDcatTransformerExtension implements ServiceExtension {
         transformerRegistry
                 .forContext(DSP_TRANSFORMER_CONTEXT_V_2025_1)
                 .register(
-                        new JsonObjectFromEuropeanaDcatDistributionTransformer(jsonFactory)
+                        new JsonObjectFromEuropeanaDcatDistributionTransformer(jsonFactory, typeManager, JSON_LD )
                 );
 
         transformerRegistry
@@ -63,6 +68,12 @@ public class EuropeanaDcatTransformerExtension implements ServiceExtension {
                 .forContext("management-api")
                 .register(
                         new JsonObjectToEuropeanaDcatDistributionTransformer()
+                );
+
+        transformerRegistry
+                .forContext("management-api")
+                .register(
+                        new JsonObjectFromEuropeanaDcatDistributionTransformer(jsonFactory, typeManager, JSON_LD )
                 );
     }
 }

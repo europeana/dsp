@@ -12,6 +12,50 @@ package eu.europeana.dsp.controlplane.store.sql.distributionindex;
  */
 public class EuropeanaDistributionStatements {
 
+    protected String getDistributionTable() {
+        return "edc_distribution";
+    }
+
+    protected String getAssetIdColumn() {
+        return "asset_id";
+    }
+
+    protected String getDistributionIdColumn() {
+        return "distribution_id";
+    }
+
+    protected String getPropertiesColumn() {
+        return "properties";
+    }
+
+    protected String getDataAddressColumn() {
+        return "data_address";
+    }
+
+    protected String getParticipantContextIdColumn() {
+        return "participant_context_id";
+    }
+
+    protected String getCreatedAtColumn() {
+        return "created_at";
+    }
+
+    public String getFindDistributionsByAssetIdTemplate() {
+        return """
+        SELECT
+            id,
+            asset_id,
+            created_at,
+            distribution_id,
+            properties,
+            data_address,
+            participant_context_id
+        FROM edc_distribution
+        WHERE asset_id = ?
+        ORDER BY created_at
+        """;
+    }
+
     public static String getInsertDistributionTemplate() {
         return """
             INSERT INTO edc_distribution (

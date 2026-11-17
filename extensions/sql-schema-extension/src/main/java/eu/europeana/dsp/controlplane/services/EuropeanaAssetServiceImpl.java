@@ -1,5 +1,6 @@
 package eu.europeana.dsp.controlplane.services;
 
+import eu.europeana.dsp.connector.controlplane.catalog.spi.DspVocabulary;
 import eu.europeana.dsp.connector.controlplane.catalog.spi.definitions.EuropeanaAsset;
 import eu.europeana.dsp.connector.controlplane.catalog.spi.definitions.EuropeanaDistribution;
 import eu.europeana.dsp.controlplane.store.sql.assetindex.EuropeanaSqlAssetIndex;
@@ -44,6 +45,40 @@ public class EuropeanaAssetServiceImpl extends AssetServiceImpl implements Asset
         this.europeanaSqlAssetIndex = europeanaSqlAssetIndex;
         this.transactionContext = transactionContext;
         this.observable = observable;
+    }
+
+    /**
+     * Finds an asset by its identifier and enriches its public properties with the associated Europeana distributions.
+     *
+     * @param assetId the identifier of the asset to look up
+     * @return the asset with Europeana distributions added to its properties, or
+     *         null if no asset with the specified identifier exists
+     * @throws NullPointerException if assetId is null
+     */
+    @Override
+    public Asset findById(String assetId) {
+        var europeanaAsset = europeanaSqlAssetIndex.findEuropeanaAssetById(assetId);
+        if (europeanaAsset == null) {
+            return null;
+        }
+
+        var asset = europeanaAsset.getAsset();
+        var properties = new HashMap<>(asset.getProperties());
+
+        properties.put(
+                DspVocabulary.EUROPEANA_DISTRIBUTIONS,
+                europeanaAsset.getDistributions()
+        );
+
+        return Asset.Builder.newInstance()
+                .id(asset.getId())
+                .properties(properties)
+                .privateProperties(asset.getPrivateProperties())
+                .dataAddress(asset.getDataAddress())
+                .createdAt(asset.getCreatedAt())
+                .dataplaneMetadata(asset.getDataplaneMetadata())
+                .participantContextId(asset.getParticipantContextId())
+                .build();
     }
 
     @Override

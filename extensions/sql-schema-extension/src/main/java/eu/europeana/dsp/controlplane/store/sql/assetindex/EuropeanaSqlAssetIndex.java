@@ -11,6 +11,7 @@ import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.sql.QueryExecutor;
 import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
 import org.eclipse.edc.transaction.spi.TransactionContext;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
 import java.util.Objects;
@@ -44,6 +45,27 @@ public class EuropeanaSqlAssetIndex extends SqlAssetIndex {
         super(dataSourceRegistry, dataSourceName, transactionContext, objectMapper, assetStatements, queryExecutor);
         this.assetStatements = Objects.requireNonNull(assetStatements);
         this.distributionIndex = distributionIndex;
+    }
+
+    /**
+     * Finds a Europeana asset by its identifier, including the associated DCAT distributions.
+     *
+     * @param assetId the identifier of the asset to look up
+     * @return the Europeana asset with its distributions, or null if no asset with the specified identifier exists
+     * @throws NullPointerException if assetId is null
+     */
+    public @Nullable EuropeanaAsset findEuropeanaAssetById(String assetId) {
+        Objects.requireNonNull(assetId);
+        var asset = super.findById(assetId);
+        if (asset == null) {
+            return null;
+        }
+        var distributions = distributionIndex.findByAssetId(assetId);
+        var europeanaAsset = new EuropeanaAsset();
+        europeanaAsset.setAsset(asset);
+        europeanaAsset.setDistributions(distributions);
+
+        return europeanaAsset;
     }
 
     /**

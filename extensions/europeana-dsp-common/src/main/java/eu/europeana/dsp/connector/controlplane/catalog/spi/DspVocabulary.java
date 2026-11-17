@@ -33,6 +33,7 @@ public class DspVocabulary {
 
     // others
     public static final String EUROPEANA_DISTRIBUTIONS = EDC_NAMESPACE + "distribution";
+    public static final String DATA_ADDRESS_ATTRIBUTE  = EDC_NAMESPACE + "dataAddress";
 
 
 }

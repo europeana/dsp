@@ -17,7 +17,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.eclipse.edc.jsonld.spi.JsonLdKeywords.ID;
 import static org.eclipse.edc.spi.constants.CoreConstants.EDC_NAMESPACE;
+import static org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset.EDC_ASSET_PROPERTIES;
 
 /**
  * Transforms an expanded JSON-LD object into a Europeana DCAT distribution model.
@@ -38,7 +40,6 @@ public class JsonObjectToEuropeanaDcatDistributionTransformer
     @Override
     public @Nullable EuropeanaDistribution transform(@NotNull JsonObject object, @NotNull TransformerContext context) {
         var distribution = new EuropeanaDistribution(nodeId(object));
-
         visitProperties(object, (key, value) ->
                 transformProperties(key, value, distribution, context));
 
@@ -46,15 +47,12 @@ public class JsonObjectToEuropeanaDcatDistributionTransformer
     }
 
     private void transformProperties(String key, JsonValue value, EuropeanaDistribution distribution, TransformerContext context) {
-        if ("@id".equals(key)) {
+        if (ID.equals(key)) {
             transformString(value, distribution::setDistributionId, context);
-        } else if (EDC_PROPERTIES.equals(key)) {
+        } else if (EDC_ASSET_PROPERTIES.equals(key)) {
             var propertiesObject = getFirstObject(value, context);
-
             if (propertiesObject != null) {
-                distribution.setProperties(
-                        transformProperties(propertiesObject, context)
-                );
+                distribution.setProperties(transformProperties(propertiesObject, context));
             }
         } else if (EDC_DATA_ADDRESS.equals(key)) {
             var dataAddressObject = getFirstObject(value, context);
@@ -108,17 +106,52 @@ public class JsonObjectToEuropeanaDcatDistributionTransformer
     private Object transformPropertyValue(JsonValue value) {
         return switch (value.getValueType()) {
             case STRING -> ((JsonString) value).getString();
+
             case NUMBER -> {
                 var number = (JsonNumber) value;
                 yield number.isIntegral()
                         ? number.longValue()
                         : number.bigDecimalValue();
             }
+
             case TRUE -> true;
             case FALSE -> false;
-            case OBJECT -> value.asJsonObject();
-            case ARRAY -> value.asJsonArray();
             case NULL -> null;
+
+            case ARRAY -> {
+                var array = value.asJsonArray();
+
+                // Expanded JSON-LD commonly represents even a single value
+                // as an array. Unwrap singleton arrays.
+                if (array.size() == 1) {
+                    yield transformPropertyValue(array.get(0));
+                }
+
+                yield array.stream()
+                        .map(this::transformPropertyValue)
+                        .toList();
+            }
+
+            case OBJECT -> {
+                var object = value.asJsonObject();
+
+                // JSON-LD literal value.
+                if (object.containsKey("@value")) {
+                    yield transformPropertyValue(object.get("@value"));
+                }
+
+                // JSON-LD identifier reference.
+                if (object.containsKey("@id")) {
+                    yield object.getString("@id");
+                }
+
+                // Handle nested objects recursively.
+                var map = new HashMap<String, Object>();
+                object.forEach((key, nestedValue) ->
+                        map.put(key, transformPropertyValue(nestedValue))
+                );
+                yield map;
+            }
         };
     }
 
