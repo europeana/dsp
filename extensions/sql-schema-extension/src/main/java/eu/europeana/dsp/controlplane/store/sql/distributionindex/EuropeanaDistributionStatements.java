@@ -40,6 +40,25 @@ public class EuropeanaDistributionStatements {
         return "created_at";
     }
 
+    public static String getUpsertDistributionTemplate() {
+        return """
+        INSERT INTO edc_distribution (
+            id,
+            asset_id,
+            created_at,
+            distribution_id,
+            properties,
+            data_address,
+            participant_context_id
+        ) VALUES (?, ?, ?, ?, ?::json, ?::json, ?)
+        ON CONFLICT (asset_id, distribution_id)
+        DO UPDATE SET
+            properties = EXCLUDED.properties,
+            data_address = EXCLUDED.data_address,
+            participant_context_id = EXCLUDED.participant_context_id
+        """;
+    }
+
     public String getFindDistributionsByAssetIdTemplate() {
         return """
         SELECT
@@ -56,6 +75,14 @@ public class EuropeanaDistributionStatements {
         """;
     }
 
+    public String getDeleteDistributionTemplate() {
+        return """
+        DELETE FROM edc_distribution
+        WHERE asset_id = ?
+          AND distribution_id = ?
+        """;
+    }
+    
     public static String getInsertDistributionTemplate() {
         return """
             INSERT INTO edc_distribution (

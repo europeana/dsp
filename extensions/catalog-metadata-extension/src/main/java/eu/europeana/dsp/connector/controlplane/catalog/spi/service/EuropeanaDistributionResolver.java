@@ -1,6 +1,5 @@
 package eu.europeana.dsp.connector.controlplane.catalog.spi.service;
 
-import eu.europeana.dsp.connector.controlplane.catalog.spi.definitions.EuropeanaDcatDistribution;
 import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
 import org.eclipse.edc.connector.controlplane.catalog.DefaultDistributionResolver;
 import org.eclipse.edc.connector.controlplane.catalog.spi.DataService;
@@ -12,7 +11,6 @@ import org.eclipse.edc.spi.types.domain.DataAddress;
 
 import java.util.*;
 
-import static eu.europeana.dsp.connector.controlplane.catalog.spi.service.DistributionMetadataExtractor.*;
 import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCT_FORMAT_ATTRIBUTE;
 
 /**
@@ -40,6 +38,7 @@ import static org.eclipse.edc.jsonld.spi.PropertyAndTypeNames.DCT_FORMAT_ATTRIBU
  *   }
  * }
  */
+//TODO check if we need this anymore
 public class EuropeanaDistributionResolver extends DefaultDistributionResolver {
 
     public EuropeanaDistributionResolver(
@@ -52,6 +51,7 @@ public class EuropeanaDistributionResolver extends DefaultDistributionResolver {
     // will return Europeana Dcat Distribution
     @Override
     public List<Distribution> getDistributions(String protocol, Asset asset) {
+        System.out.println("In EuropeanaDistributionResolver.... ");
         if (asset.isCatalog()) {
             if (asset.getDataAddress() == null) {
                 return List.of(Distribution.Builder.newInstance()
@@ -79,25 +79,27 @@ public class EuropeanaDistributionResolver extends DefaultDistributionResolver {
      *         The list will be empty if the asset does not have valid distribution data.
      */
     public static List<Distribution> buildDistributions(Asset asset) {
-        List<Distribution> distributions = new ArrayList<>();
-        Map<String, Object> properties = asset.getDataAddress().getProperties();
-        int noOfDistribution = getDistributionCount(properties);
-
-        if (noOfDistribution > 0) {
-            // TODO check if this will be the same dataservice created everytime based on asset id
-            var dataService = DataService.Builder.newInstance()
-                    .id(Base64.getUrlEncoder()
-                            .encodeToString(asset.getId().getBytes()))
-                    .build();
-
-            for (int i = 1; i <= noOfDistribution; i++) {
-                EuropeanaDcatDistribution distribution = buildDistribution(properties, String.valueOf(i));
-                distribution.setDataService(dataService);
-                distribution.setFormat(getDistributionFormat(asset.getDataAddress()));
-                distributions.add(distribution);
-            }
-        }
-        return distributions;
+//        List<Distribution> distributions = new ArrayList<>();
+//        Map<String, Object> properties = asset.getDataAddress().getProperties();
+//        int noOfDistribution = getDistributionCount(properties);
+//
+//        if (noOfDistribution > 0) {
+//            // TODO check if this will be the same dataservice created everytime based on asset id
+//            var dataService = DataService.Builder.newInstance()
+//                    .id(Base64.getUrlEncoder()
+//                            .encodeToString(asset.getId().getBytes()))
+//                    .build();
+//
+//            for (int i = 1; i <= noOfDistribution; i++) {
+//                EuropeanaDcatDistribution distribution = buildDistribution(properties, String.valueOf(i));
+//                distribution.setDataService(dataService);
+//                distribution.setFormat(getDistributionFormat(asset.getDataAddress()));
+//                distributions.add(distribution);
+//            }
+//        }
+//        return distributions;
+        System.out.println("No distributions found for asset: " + asset.getId());
+        return null;
     }
 
 

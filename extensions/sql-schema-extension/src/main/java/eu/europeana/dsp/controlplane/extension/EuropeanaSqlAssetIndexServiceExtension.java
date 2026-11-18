@@ -79,7 +79,7 @@ public class EuropeanaSqlAssetIndexServiceExtension implements ServiceExtension 
                         transactionContext,
                         typeManager.getMapper(),
                         queryExecutor,
-                        new EuropeanaDistributionStatements()));
+                        new EuropeanaDistributionStatements()), monitor);
 
         context.registerService(AssetIndex.class, sqlAssetIndex);
         context.registerService(DataAddressResolver.class, sqlAssetIndex);

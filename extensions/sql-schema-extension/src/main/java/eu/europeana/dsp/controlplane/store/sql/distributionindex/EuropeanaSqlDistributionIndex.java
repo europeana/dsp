@@ -3,6 +3,7 @@ package eu.europeana.dsp.controlplane.store.sql.distributionindex;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europeana.dsp.connector.controlplane.catalog.spi.definitions.EuropeanaDistribution;
 import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.sql.QueryExecutor;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * SQL-backed index for persisting Europeana distribution records associated with
@@ -79,7 +81,7 @@ public class EuropeanaSqlDistributionIndex extends AbstractSqlStore {
         for (var distribution : distributions) {
             queryExecutor.execute(
                     connection,
-                    statements.getInsertDistributionTemplate(),
+                    statements.getUpsertDistributionTemplate(),
                     asset.getId() + "_" + distribution.getDistributionId(),
                     asset.getId(),
                     System.currentTimeMillis(), // created_at
@@ -89,6 +91,30 @@ public class EuropeanaSqlDistributionIndex extends AbstractSqlStore {
                             .map(DataAddress::getProperties)
                             .orElse(null)),
                     asset.getParticipantContextId()
+            );
+        }
+    }
+
+
+    public void deleteDistributions(
+            String assetId,
+            List<EuropeanaDistribution> distributions,
+            Connection connection,
+            Monitor monitor
+    ) {
+        monitor.info("Removing distributions for asset with id: " + assetId
+                + ". Distribution IDs: " + distributions.stream()
+                .map(EuropeanaDistribution::getDistributionId)
+                .collect(Collectors.joining(", ")));
+
+        var sql = statements.getDeleteDistributionTemplate();
+
+        for (var distribution : distributions) {
+            queryExecutor.execute(
+                    connection,
+                    sql,
+                    assetId,
+                    distribution.getDistributionId()
             );
         }
     }

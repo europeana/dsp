@@ -14,12 +14,11 @@ import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.result.ServiceResult;
 import org.eclipse.edc.transaction.spi.TransactionContext;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static eu.europeana.dsp.connector.controlplane.catalog.spi.DspVocabulary.EUROPEANA_DISTRIBUTIONS;
+import static eu.europeana.dsp.controlplane.services.BaseService.*;
 
 /**
  * Asset service implementation that persists standard EDC assets together with Europeana-specific distribution
@@ -64,21 +63,8 @@ public class EuropeanaAssetServiceImpl extends AssetServiceImpl implements Asset
 
         var asset = europeanaAsset.getAsset();
         var properties = new HashMap<>(asset.getProperties());
-
-        properties.put(
-                DspVocabulary.EUROPEANA_DISTRIBUTIONS,
-                europeanaAsset.getDistributions()
-        );
-
-        return Asset.Builder.newInstance()
-                .id(asset.getId())
-                .properties(properties)
-                .privateProperties(asset.getPrivateProperties())
-                .dataAddress(asset.getDataAddress())
-                .createdAt(asset.getCreatedAt())
-                .dataplaneMetadata(asset.getDataplaneMetadata())
-                .participantContextId(asset.getParticipantContextId())
-                .build();
+        properties.put(DspVocabulary.EUROPEANA_DISTRIBUTIONS, europeanaAsset.getDistributions());
+        return buildAsset(asset, properties);
     }
 
     @Override
@@ -89,60 +75,50 @@ public class EuropeanaAssetServiceImpl extends AssetServiceImpl implements Asset
         if (asset.hasDuplicatePropertyKeys()) {
             return ServiceResult.badRequest(DUPLICATED_KEYS_MESSAGE);
         }
-        Map<String,Object> properties = new HashMap<>(asset.getProperties());
-        var distributionsValue = properties.remove(EUROPEANA_DISTRIBUTIONS);
-        List<EuropeanaDistribution> distributions = extractDistributions(distributionsValue);
-
-        if (distributions == null) {
-            return ServiceResult.badRequest("Invalid Europeana distributions property");
-        }
-
-        // Build a clean EDC Asset without the internal distributions property.
-        var cleanAsset = Asset.Builder.newInstance()
-                .id(asset.getId())
-                .properties(properties)
-                .privateProperties(asset.getPrivateProperties())
-                .dataAddress(asset.getDataAddress())
-                .createdAt(asset.getCreatedAt())
-                .dataplaneMetadata(asset.getDataplaneMetadata())
-                .participantContextId(asset.getParticipantContextId())
-                .build();
-
-        // Wrap the asset and distributions for persistence.
-        EuropeanaAsset europeanaAsset = new EuropeanaAsset();
-        europeanaAsset.setAsset(cleanAsset);
-        europeanaAsset.setDistributions(distributions);
-
+        // Convert Asset to Europeana Asset for persistence.
+        EuropeanaAsset europeanaAsset = toEuropeanaAsset(asset);
         return transactionContext.execute(() ->
                 europeanaSqlAssetIndex.create(europeanaAsset)
-                        .onSuccess(i -> observable.invokeForEach(l -> l.created(cleanAsset)))
+                        .onSuccess(i -> observable.invokeForEach(l -> l.created(europeanaAsset.getAsset())))
                         .flatMap(ServiceResult::from)
-                        .map(i -> cleanAsset)
+                        .map(i -> europeanaAsset.getAsset())
         );
     }
 
     /**
-     * Extracts Europeana distributions from the supplied property value.
+     * Updates an existing asset and its Europeana distributions.
      *
-     * @param value the value to extract distributions from; may be null or a list of EuropeanaDistribution instances
-     * @return an empty list when the value is null, a list containing the extracted
-     * distributions when the value is valid, or null when the value is not a list or contains non-EuropeanaDistribution entries
+     * The asset must not contain duplicate property keys and must already exist in the asset index.
+     * Europeana distribution data is extracted from the asset properties before persistence, and
+     * distributions that are no longer present are removed as part of the update. Registered
+     * observers are notified after a successful update.
+     *
+     * @param asset the asset containing the updated metadata and Europeana distribution data
+     * @return a successful result containing the updated asset, or a bad request result if the asset
+     *         contains duplicate property keys or no existing asset is found for the specified identifier
      */
-    private List<EuropeanaDistribution> extractDistributions(Object value) {
-        if (value == null) {
-            return new ArrayList<>();
+    @Override
+    public ServiceResult<Asset> update(Asset asset) {
+        if (asset.hasDuplicatePropertyKeys()) {
+            return ServiceResult.badRequest(DUPLICATED_KEYS_MESSAGE);
         }
-        if (!(value instanceof List<?> distributionList)) {
-            return null;
-        }
-        var distributions = new ArrayList<EuropeanaDistribution>();
 
-        for (var item : distributionList) {
-            if (!(item instanceof EuropeanaDistribution distribution)) {
-                return null;
-            }
-            distributions.add(distribution);
+        EuropeanaAsset existingAsset = europeanaSqlAssetIndex.findEuropeanaAssetById(asset.getId());
+        if (existingAsset == null) {
+            return ServiceResult.badRequest("Asset with id " + asset.getId() + " not found");
         }
-        return distributions;
+
+        Map<String,Object> properties = new HashMap<>(asset.getProperties());
+        List<EuropeanaDistribution> newDistributions = extractDistributionData(properties);
+        List<EuropeanaDistribution> distributionsToRemove = getDistributionToRemove(newDistributions, existingAsset);
+
+        Asset assetToUpdate = buildAsset(asset, properties); // properties without distributions
+        EuropeanaAsset europeanaAsset = wrapEuropeanaAsset(assetToUpdate, newDistributions); // wrap around europeana asset for persistence
+
+        return transactionContext.execute(() ->
+                europeanaSqlAssetIndex.updateAsset(europeanaAsset, distributionsToRemove)
+                        .onSuccess(a -> observable.invokeForEach(l -> l.updated(a)))
+                        .flatMap(ServiceResult::from)
+        );
     }
 }

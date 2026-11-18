@@ -27,7 +27,6 @@ public class JsonObjectFromEuropeanaAssetTransformer extends JsonObjectFromAsset
 
     @Override
     public @Nullable JsonObject transform(@NotNull Asset asset, @NotNull TransformerContext context) {
-//        return super.transform(asset, context);
         var properties = new HashMap<>(asset.getProperties());
 
         // Extract Europeana distributions.
@@ -62,7 +61,6 @@ public class JsonObjectFromEuropeanaAssetTransformer extends JsonObjectFromAsset
         for (var item : distributions) {
             if (item instanceof EuropeanaDistribution distribution) {
                 // will invoke JsonObjectFromEuropeanaDistributionTransformer
-                System.out.println("Transforming distribution: " + distribution.getProperties());
                 var distributionJson = context.transform(
                         distribution,
                         JsonObject.class

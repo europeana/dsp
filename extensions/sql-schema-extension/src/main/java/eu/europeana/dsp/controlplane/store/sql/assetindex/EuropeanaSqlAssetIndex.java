@@ -2,9 +2,11 @@ package eu.europeana.dsp.controlplane.store.sql.assetindex;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europeana.dsp.connector.controlplane.catalog.spi.definitions.EuropeanaAsset;
+import eu.europeana.dsp.connector.controlplane.catalog.spi.definitions.EuropeanaDistribution;
 import eu.europeana.dsp.controlplane.store.sql.distributionindex.EuropeanaSqlDistributionIndex;
 import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
 import org.eclipse.edc.connector.controlplane.store.sql.assetindex.SqlAssetIndex;
+import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.types.domain.DataAddress;
@@ -14,8 +16,10 @@ import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * SQL-backed asset index implementation for the Europeana asset index schema.
@@ -37,14 +41,16 @@ public class EuropeanaSqlAssetIndex extends SqlAssetIndex {
 
     private final EuropeanaAssetStatements assetStatements;
     private final EuropeanaSqlDistributionIndex distributionIndex;
+    private final Monitor monitor;
 
     public EuropeanaSqlAssetIndex(DataSourceRegistry dataSourceRegistry, String dataSourceName,
                                   TransactionContext transactionContext, ObjectMapper objectMapper,
                                   EuropeanaAssetStatements assetStatements, QueryExecutor queryExecutor,
-                                  EuropeanaSqlDistributionIndex distributionIndex) {
+                                  EuropeanaSqlDistributionIndex distributionIndex, Monitor monitor) {
         super(dataSourceRegistry, dataSourceName, transactionContext, objectMapper, assetStatements, queryExecutor);
         this.assetStatements = Objects.requireNonNull(assetStatements);
         this.distributionIndex = distributionIndex;
+        this.monitor = monitor;
     }
 
     /**
@@ -139,29 +145,17 @@ public class EuropeanaSqlAssetIndex extends SqlAssetIndex {
         );
     }
 
-    /**
-     * Updates an existing asset in the asset index.
-     *
-     * The asset is persisted with the current modification timestamp, public and private
-     * properties, data address properties, and dataplane metadata. If no asset with the
-     * same identifier exists, no update is performed.
-     *
-     * @param asset the asset to update
-     * @return a successful result containing the updated asset, or a not-found result if no asset with the
-     *         same identifier exists
-     * @throws NullPointerException if the asset is null
-     * @throws EdcPersistenceException if the asset cannot be updated
-     */
-    @Override
-    public StoreResult<Asset> updateAsset(Asset asset) {
-        Objects.requireNonNull(asset);
+
+    public StoreResult<Asset> updateAsset(EuropeanaAsset europeanaAsset, List<EuropeanaDistribution> distributionsToRemove) {
+        Objects.requireNonNull(europeanaAsset);
+        Objects.requireNonNull(europeanaAsset.getAsset());
 
         return transactionContext.execute(() -> {
             try (var connection = getConnection()) {
+                var asset = europeanaAsset.getAsset();
                 var assetId = asset.getId();
 
                 if (existsById(assetId, connection)) {
-
                     queryExecutor.execute(
                             connection,
                             assetStatements.getUpdateAssetTemplate(),
@@ -174,6 +168,14 @@ public class EuropeanaSqlAssetIndex extends SqlAssetIndex {
                             toJson(asset.getDataplaneMetadata()),
                             assetId
                     );
+
+                    // update distributions
+                    distributionIndex.insertDistributions(asset, europeanaAsset.getDistributions(), connection);
+
+                    // remove distributions
+                    if (distributionsToRemove != null && !distributionsToRemove.isEmpty()) {
+                        distributionIndex.deleteDistributions(asset.getId(), distributionsToRemove, connection, monitor);
+                    }
 
                     return StoreResult.success(asset);
                 }

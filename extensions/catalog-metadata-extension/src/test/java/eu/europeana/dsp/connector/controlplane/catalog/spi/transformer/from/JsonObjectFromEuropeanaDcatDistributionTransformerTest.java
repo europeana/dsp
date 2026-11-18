@@ -2,7 +2,6 @@ package eu.europeana.dsp.connector.controlplane.catalog.spi.transformer.from;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import eu.europeana.dsp.connector.controlplane.catalog.spi.TestUtils;
-import eu.europeana.dsp.connector.controlplane.catalog.spi.definitions.EuropeanaDcatDistribution;
 import jakarta.json.Json;
 import jakarta.json.JsonBuilderFactory;
 import jakarta.json.JsonObject;
