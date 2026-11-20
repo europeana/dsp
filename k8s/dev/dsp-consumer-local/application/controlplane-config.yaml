@@ -73,11 +73,6 @@ data:
 
   JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044"
 
-  ## catalog Metadata properties
-  edc.catalog.title: "Europeana Dataset Catalog"
-  edc.catalog.description: "Europeana datasets available through DSP"
-  edc.catalog.publisher: "Europeana Foundation"
-
   # for context loading in http and https
   edc.jsonld.https.enabled: "true"
   edc.jsonld.http.enabled: "true"

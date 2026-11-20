@@ -1,6 +1,5 @@
 package eu.europeana.dsp.connector.controlplane.catalog.spi.service;
 
-import eu.europeana.dsp.connector.controlplane.catalog.spi.definitions.EuropeanaDcatDistribution;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
