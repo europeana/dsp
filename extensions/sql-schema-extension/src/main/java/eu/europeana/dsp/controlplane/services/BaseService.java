@@ -47,6 +47,7 @@ public class BaseService {
      */
     public static EuropeanaAsset toEuropeanaAsset(Asset asset) {
         Map<String,Object> properties = new HashMap<>(asset.getProperties());
+        // this method will also update the properties to remove the internal distributions' property.
         List<EuropeanaDistribution> distributions = extractDistributionData(properties);
         // Build a clean EDC Asset without the internal distributions property.
         var cleanAsset = buildAsset(asset, properties);

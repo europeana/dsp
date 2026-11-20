@@ -18,6 +18,34 @@ public class EuropeanaAssetStatements extends PostgresDialectStatements {
 
     private static final String MODIFIED_AT_COLUMN = "modified_at";
 
+    public static final String DISTRIBUTION_FETCHED_IN_JOIN = "distributions";
+
+    public String getQueryEuropeanaAssetsTemplate(String assetQuery) {
+        return """
+        SELECT
+            a.*,
+            COALESCE(d.distributions, '[]'::json) AS distributions
+        FROM (
+            %s
+        ) AS a
+        LEFT JOIN LATERAL (
+            SELECT json_agg(
+                json_build_object(
+                    'id', d.id,
+                    'distribution_id', d.distribution_id,
+                    'created_at', d.created_at,
+                    'properties', d.properties,
+                    'data_address', d.data_address,
+                    'participant_context_id', d.participant_context_id
+                )
+                ORDER BY d.created_at
+            ) AS distributions
+            FROM edc_distribution AS d
+            WHERE d.asset_id = a.asset_id
+        ) AS d ON TRUE
+        """.formatted(assetQuery);
+    }
+
     /**
      * Returns the asset insert SQL template with the modified timestamp column
      * appended to the insert column list and a corresponding parameter placeholder

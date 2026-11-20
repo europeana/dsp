@@ -1,9 +1,12 @@
 package eu.europeana.dsp.controlplane.store.sql.assetindex;
 
-import org.eclipse.edc.sql.translation.PostgresqlOperatorTranslator;
+import org.eclipse.edc.spi.query.Criterion;
+import org.eclipse.edc.spi.query.QuerySpec;
+import org.eclipse.edc.spi.query.SortOrder;
+import org.eclipse.edc.sql.translation.SqlQueryStatement;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EuropeanaAssetStatementsTest {
 
@@ -18,6 +21,8 @@ public class EuropeanaAssetStatementsTest {
             "dataplane_metadata = ?::json " +
             "WHERE asset_id = ?;";
 
+    private static String ASSET_QUERY = "SELECT * FROM edc_asset AS a WHERE participant_context_id = ? LIMIT ? OFFSET ?;";
+
     EuropeanaAssetStatements statements = new EuropeanaAssetStatements();
 
     @Test
@@ -31,5 +36,22 @@ public class EuropeanaAssetStatementsTest {
     void testGetUpdateAssetTemplate(){
         String template = statements.getUpdateAssetTemplate();
         assertEquals(UPDATE_TEMPLATE, template);
+    }
+
+    @Test
+    void testgetQueryEuropeanaAssetsTemplate(){
+        QuerySpec querySpec = QuerySpec.Builder.newInstance().sortOrder(SortOrder.ASC)
+                .offset(0)
+                .filter(Criterion.criterion("participantContextId" , "=", "testing"))
+                .build();
+
+        SqlQueryStatement assetQuery = statements.createQuery(querySpec);
+        assertNotNull(assetQuery);
+        assertEquals(ASSET_QUERY, assetQuery.getQueryAsString());
+
+        String europeanaAssetQueryTemplate = statements.getQueryEuropeanaAssetsTemplate(assetQuery.getQueryAsString());
+
+        assertNotNull(europeanaAssetQueryTemplate);
+        assertTrue(europeanaAssetQueryTemplate.contains(assetQuery.getQueryAsString()));
     }
 }

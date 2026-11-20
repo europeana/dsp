@@ -3,11 +3,14 @@ package eu.europeana.dsp.controlplane.store.sql.assetindex;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europeana.dsp.connector.controlplane.catalog.spi.definitions.EuropeanaAsset;
 import eu.europeana.dsp.connector.controlplane.catalog.spi.definitions.EuropeanaDistribution;
+import eu.europeana.dsp.controlplane.store.sql.distributionindex.EuropeanaDistributionStatements;
 import eu.europeana.dsp.controlplane.store.sql.distributionindex.EuropeanaSqlDistributionIndex;
 import org.eclipse.edc.connector.controlplane.asset.spi.domain.Asset;
+import org.eclipse.edc.connector.controlplane.asset.spi.domain.DataplaneMetadata;
 import org.eclipse.edc.connector.controlplane.store.sql.assetindex.SqlAssetIndex;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.persistence.EdcPersistenceException;
+import org.eclipse.edc.spi.query.QuerySpec;
 import org.eclipse.edc.spi.result.StoreResult;
 import org.eclipse.edc.spi.types.domain.DataAddress;
 import org.eclipse.edc.sql.QueryExecutor;
@@ -16,10 +19,16 @@ import org.eclipse.edc.transaction.spi.TransactionContext;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static eu.europeana.dsp.controlplane.services.BaseService.wrapEuropeanaAsset;
+import static eu.europeana.dsp.controlplane.store.sql.assetindex.EuropeanaAssetStatements.DISTRIBUTION_FETCHED_IN_JOIN;
 
 /**
  * SQL-backed asset index implementation for the Europeana asset index schema.
@@ -42,6 +51,7 @@ public class EuropeanaSqlAssetIndex extends SqlAssetIndex {
     private final EuropeanaAssetStatements assetStatements;
     private final EuropeanaSqlDistributionIndex distributionIndex;
     private final Monitor monitor;
+    private final ObjectMapper objectMapper;
 
     public EuropeanaSqlAssetIndex(DataSourceRegistry dataSourceRegistry, String dataSourceName,
                                   TransactionContext transactionContext, ObjectMapper objectMapper,
@@ -51,6 +61,46 @@ public class EuropeanaSqlAssetIndex extends SqlAssetIndex {
         this.assetStatements = Objects.requireNonNull(assetStatements);
         this.distributionIndex = distributionIndex;
         this.monitor = monitor;
+        this.objectMapper = objectMapper;
+    }
+
+    /**
+     * Queries assets matching the specified query and returns them as Europeana assets with their associated distributions.
+     *
+     * 1. super.queryAssets() executes the existing EDC query and maps each ResultSet into a standard Asset.
+     * 2. We retrieve the distributions for each asset.
+     * 3. wrapEuropeanaAsset() combines the standard asset and its distributions into EuropeanaAsset.
+     *
+     * @param querySpec the query specification used to filter, sort, and page the assets
+     * @return a stream of Europeana assets matching the query, each containing the asset data and its associated distributions
+     * @throws NullPointerException if querySpec is null
+     */
+    public Stream<EuropeanaAsset> queryEuropeanaAssets(QuerySpec querySpec) {
+        Objects.requireNonNull(querySpec);
+
+        return transactionContext.execute(() -> {
+            try (var connection = getConnection()) {
+                var statement = assetStatements.createQuery(querySpec);
+                var sql = assetStatements.getQueryEuropeanaAssetsTemplate(removeSemicolon(statement.getQueryAsString()));
+
+                return queryExecutor.query(
+                        connection,
+                        true,
+                        this::mapEuropeanaAsset,
+                        sql,
+                        statement.getParameters()
+                );
+            } catch (Exception e) {
+                throw new EdcPersistenceException(e);
+            }
+        });
+    }
+
+    private String removeSemicolon(String query) {
+        if (query.endsWith(";")) {
+            return query.substring(0, query.length() - 1);
+        }
+        return query;
     }
 
     /**
@@ -176,14 +226,9 @@ public class EuropeanaSqlAssetIndex extends SqlAssetIndex {
                     if (distributionsToRemove != null && !distributionsToRemove.isEmpty()) {
                         distributionIndex.deleteDistributions(asset.getId(), distributionsToRemove, connection, monitor);
                     }
-
                     return StoreResult.success(asset);
                 }
-
-                return StoreResult.notFound(
-                        "Asset with id '" + assetId + "' was not found"
-                );
-
+                return StoreResult.notFound("Asset with id '" + assetId + "' was not found");
             } catch (Exception e) {
                 throw new EdcPersistenceException(e);
             }
@@ -211,5 +256,70 @@ public class EuropeanaSqlAssetIndex extends SqlAssetIndex {
         )) {
             return stream.findFirst().orElse(0) > 0;
         }
+    }
+
+    /**
+     * Maps the current row of the supplied result set to a Europeana asset.
+     * The important changes are:
+     *  - Adds the distributions from the resultset
+     *  - Asset logic is the same as in the original implementation
+     *  - The distributions are added to the europeana asset
+     *
+     * @param resultSet the result set positioned at the row to map
+     * @return the mapped Europeana asset containing the reconstructed asset and its associated distributions
+     * @throws SQLException if reading values from the result set fails
+     */
+    private EuropeanaAsset mapEuropeanaAsset(ResultSet resultSet) throws SQLException {
+        Map<String, Object> dataAddressProperties = fromJson(
+                resultSet.getString(assetStatements.getDataAddressColumn()),
+                getTypeRef()
+        );
+
+        var dataAddress = Optional.ofNullable(dataAddressProperties)
+                .map(it -> DataAddress.Builder.newInstance()
+                        .properties(it)
+                        .build())
+                .orElse(null);
+
+        var asset = Asset.Builder.newInstance()
+                .id(resultSet.getString(assetStatements.getAssetIdColumn()))
+                .createdAt(resultSet.getLong(assetStatements.getCreatedAtColumn()))
+                .properties(fromJson(
+                        resultSet.getString(assetStatements.getPropertiesColumn()),
+                        getTypeRef()
+                ))
+                .privateProperties(fromJson(
+                        resultSet.getString(assetStatements.getPrivatePropertiesColumn()),
+                        getTypeRef()
+                ))
+                .dataAddress(dataAddress)
+                .participantContextId(resultSet.getString(assetStatements.getParticipantContextIdColumn()))
+                .dataplaneMetadata(fromJson(
+                        resultSet.getString(assetStatements.getDataplaneMetadataColumn()),
+                        DataplaneMetadata.class
+                ))
+                .build();
+
+        List<Map<String, Object>> distributionData = fromJson(
+                resultSet.getString(DISTRIBUTION_FETCHED_IN_JOIN),
+                objectMapper.getTypeFactory().constructCollectionType(
+                        List.class,
+                        Map.class
+                )
+        );
+
+        List<EuropeanaDistribution> distributions = distributionData.stream()
+                .map(distribution -> distributionIndex.mapDistribution(
+                        (String) distribution.get("distribution_id"),
+                        (Map<String, Object>) distribution.get("properties"),
+                        (Map<String, Object>) distribution.get("data_address")
+                ))
+                .toList();
+
+        return wrapEuropeanaAsset(asset, distributions);
+    }
+
+    private EuropeanaDistributionStatements getDistributionStatements() {
+        return distributionIndex.getDistributionStatements();
     }
 }

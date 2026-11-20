@@ -28,4 +28,6 @@ dependencies {
     api(libs.edc.controlplane.transform)
 
     implementation(project(":extensions:europeana-dsp-common"))
+    implementation(project(":extensions:sql-schema-extension"))
+
 }

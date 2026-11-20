@@ -12,31 +12,31 @@ package eu.europeana.dsp.controlplane.store.sql.distributionindex;
  */
 public class EuropeanaDistributionStatements {
 
-    protected String getDistributionTable() {
+    public String getDistributionTable() {
         return "edc_distribution";
     }
 
-    protected String getAssetIdColumn() {
+    public String getAssetIdColumn() {
         return "asset_id";
     }
 
-    protected String getDistributionIdColumn() {
+    public String getDistributionIdColumn() {
         return "distribution_id";
     }
 
-    protected String getPropertiesColumn() {
+    public String getPropertiesColumn() {
         return "properties";
     }
 
-    protected String getDataAddressColumn() {
+    public String getDataAddressColumn() {
         return "data_address";
     }
 
-    protected String getParticipantContextIdColumn() {
+    public String getParticipantContextIdColumn() {
         return "participant_context_id";
     }
 
-    protected String getCreatedAtColumn() {
+    public String getCreatedAtColumn() {
         return "created_at";
     }
 

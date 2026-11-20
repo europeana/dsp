@@ -8,6 +8,7 @@ import org.eclipse.edc.connector.controlplane.transfer.spi.flow.DataFlowControll
 import org.eclipse.edc.runtime.metamodel.annotation.Extension;
 import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.runtime.metamodel.annotation.Provider;
+import org.eclipse.edc.runtime.metamodel.annotation.Provides;
 import org.eclipse.edc.spi.monitor.Monitor;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
@@ -18,9 +19,10 @@ import org.eclipse.edc.spi.system.ServiceExtensionContext;
  * with the name "Europeana Catalog Services".
  */
 @Extension(value = EuropeanaDistributionResolverExtension.NAME)
+@Provides(DistributionResolver.class)
 public class EuropeanaDistributionResolverExtension implements ServiceExtension {
 
-    public static final String NAME = "Europeana Catalog Services";
+    public static final String NAME = "Europeana Distribution Resolver Extension";
 
     @Inject
     private DataFlowController dataFlowController;
@@ -46,12 +48,11 @@ public class EuropeanaDistributionResolverExtension implements ServiceExtension 
     }
 
     @Provider
-    public DistributionResolver distributionResolver() {
+    public EuropeanaDistributionResolver distributionResolver() {
         return new EuropeanaDistributionResolver(
                 dataServiceRegistry,
                 dataFlowController,
                 monitor
         );
     }
-
 }

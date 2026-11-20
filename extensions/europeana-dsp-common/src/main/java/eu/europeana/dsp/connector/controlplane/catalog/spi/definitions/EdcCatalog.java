@@ -7,23 +7,51 @@ import org.eclipse.edc.connector.controlplane.catalog.spi.Catalog;
 import java.util.Map;
 
 /**
- * Represents an implementation of a catalog that extends the base {@code Catalog} class
- * and adheres to the {@code ResourceDescriptionProvider} interface.
- * This class provides functionality for managing resource-related metadata
- * and description within a cataloging system.
+ * Represents an EDC catalog that extends the base catalog model with catalog-specific
+ * metadata and resource description support.
  *
- * @author  Srishti Singh
- * @since 2026-09-1
+ * The catalog stores an identifier, a set of metadata properties, and the participant
+ * context identifier associated with the catalog. Its resource information is derived
+ * from the configured properties and exposed through the ResourceDescriptionProvider
+ * contract.
+ *
+ * @author Srishti Singh
+ * @since 2026-11-18
  */
 public class EdcCatalog extends Catalog implements ResourceDescriptionProvider {
 
-    private Resource resourceInfo;
+    private String catalogId;
+    private Map<String, Object> properties;
+    private String participantContextId;
+
+    public String getCatalogId() {
+        return catalogId;
+    }
+
+    public void setCatalogId(String catalogId) {
+        this.catalogId = catalogId;
+    }
+
+    @Override
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
+    }
+
+    public String getParticipantContextId() {
+        return participantContextId;
+    }
+
+    public void setParticipantContextId(String participantContextId) {
+        this.participantContextId = participantContextId;
+    }
 
     @Override
     public Resource getResourceInfo() {
-        return resourceInfo != null
-                ? resourceInfo
-                : buildResourceInfo(getProperties());
+        return buildResourceInfo(properties);
     }
 
     @Override
@@ -33,7 +61,6 @@ public class EdcCatalog extends Catalog implements ResourceDescriptionProvider {
 
     @Override
     public void setResourceInfo(Resource resourceInfo) {
-        this.resourceInfo = resourceInfo;
+        // left empty as we don't need ResourceInfo for DCAT distributions
     }
-
 }

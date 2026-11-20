@@ -120,10 +120,21 @@ public class EuropeanaSqlDistributionIndex extends AbstractSqlStore {
     }
 
     private EuropeanaDistribution mapDistribution(ResultSet resultSet) throws SQLException {
-        Map<String, Object> dataAddressProperties = fromJson(
-                resultSet.getString(statements.getDataAddressColumn()),
-                getTypeRef()
+        return mapDistribution(
+                resultSet.getString(statements.getDistributionIdColumn()),
+                resultSet.getString(statements.getPropertiesColumn()),
+                resultSet.getString(statements.getDataAddressColumn())
         );
+    }
+
+
+    public EuropeanaDistribution mapDistribution(
+            String distributionId,
+            String propertiesJson,
+            String dataAddressJson) {
+
+        Map<String, Object> dataAddressProperties =
+                fromJson(dataAddressJson, getTypeRef());
 
         var dataAddress = Optional.ofNullable(dataAddressProperties)
                 .map(it -> DataAddress.Builder.newInstance()
@@ -131,17 +142,35 @@ public class EuropeanaSqlDistributionIndex extends AbstractSqlStore {
                         .build())
                 .orElse(null);
 
-        var distribution = new EuropeanaDistribution(
-                resultSet.getString(statements.getDistributionIdColumn())
-        );
+        var distribution = new EuropeanaDistribution(distributionId);
 
-        distribution.setProperties(fromJson(
-                resultSet.getString(statements.getPropertiesColumn()),
-                getTypeRef()
-        ));
-
+        distribution.setProperties(fromJson(propertiesJson, getTypeRef()));
         distribution.setDataAddress(dataAddress);
 
         return distribution;
+    }
+
+
+    // Aggregated JSON path
+    public EuropeanaDistribution mapDistribution(
+            String distributionId,
+            Map<String, Object> properties,
+            Map<String, Object> dataAddressProperties) {
+
+        var dataAddress = Optional.ofNullable(dataAddressProperties)
+                .map(it -> DataAddress.Builder.newInstance()
+                        .properties(it)
+                        .build())
+                .orElse(null);
+
+        var distribution = new EuropeanaDistribution(distributionId);
+        distribution.setProperties(properties);
+        distribution.setDataAddress(dataAddress);
+
+        return distribution;
+    }
+
+    public EuropeanaDistributionStatements getDistributionStatements() {
+        return statements;
     }
 }

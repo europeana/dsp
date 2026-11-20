@@ -12,4 +12,6 @@
 #
 #
 
-eu.europeana.dsp.controlplane.extension.EuropeanaSqlAssetIndexServiceExtension
+eu.europeana.dsp.controlplane.extension.EuropeanaSqlAssetIndexExtension
+eu.europeana.dsp.controlplane.extension.EuropeanaAssetServiceExtension
+eu.europeana.dsp.controlplane.extension.EuropeanaSqlCatalogIndexExtension

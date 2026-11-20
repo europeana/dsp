@@ -1,17 +1,12 @@
 package eu.europeana.dsp.controlplane.extension;
 
-import eu.europeana.dsp.controlplane.services.EuropeanaAssetServiceImpl;
 import eu.europeana.dsp.controlplane.store.sql.assetindex.EuropeanaAssetStatements;
 import eu.europeana.dsp.controlplane.store.sql.assetindex.EuropeanaSqlAssetIndex;
 import eu.europeana.dsp.controlplane.store.sql.distributionindex.EuropeanaDistributionStatements;
 import eu.europeana.dsp.controlplane.store.sql.distributionindex.EuropeanaSqlDistributionIndex;
 import org.eclipse.edc.connector.controlplane.asset.spi.index.AssetIndex;
 import org.eclipse.edc.connector.controlplane.asset.spi.index.DataAddressResolver;
-import org.eclipse.edc.connector.controlplane.asset.spi.observe.AssetObservableImpl;
 import org.eclipse.edc.connector.controlplane.contract.spi.negotiation.store.ContractNegotiationStore;
-import org.eclipse.edc.connector.controlplane.services.asset.AssetEventListener;
-import org.eclipse.edc.connector.controlplane.services.asset.AssetQueryValidator;
-import org.eclipse.edc.connector.controlplane.services.spi.asset.AssetService;
 import org.eclipse.edc.runtime.metamodel.annotation.*;
 import org.eclipse.edc.spi.event.EventRouter;
 import org.eclipse.edc.spi.monitor.Monitor;
@@ -34,8 +29,8 @@ import org.eclipse.edc.transaction.datasource.spi.DataSourceRegistry;
  * @author Srishti Singh
  * @since 2026-12-11
  */
-@Extension(EuropeanaSqlAssetIndexServiceExtension.NAME)
-public class EuropeanaSqlAssetIndexServiceExtension implements ServiceExtension {
+@Extension(EuropeanaSqlAssetIndexExtension.NAME)
+public class EuropeanaSqlAssetIndexExtension implements ServiceExtension {
 
     public static final String NAME = "Europeana SQL Schema Service Extension";
 
@@ -66,11 +61,13 @@ public class EuropeanaSqlAssetIndexServiceExtension implements ServiceExtension 
     @Inject
     private Monitor monitor;
 
+    private EuropeanaSqlAssetIndex sqlAssetIndex;
+
     @Override
     public void initialize(ServiceExtensionContext context) {
         // initialise EuropeanaSqlAssetIndex with EuropeanaAssetStatements and
         // EuropeanaSqlDistributionIndex with EuropeanaDistributionStatements
-        EuropeanaSqlAssetIndex sqlAssetIndex = new EuropeanaSqlAssetIndex(dataSourceRegistry, dataSourceName,
+        sqlAssetIndex = new EuropeanaSqlAssetIndex(dataSourceRegistry, dataSourceName,
                 transactionContext,
                 typeManager.getMapper(), getDialect(), queryExecutor,
                 new EuropeanaSqlDistributionIndex(
@@ -110,25 +107,15 @@ public class EuropeanaSqlAssetIndexServiceExtension implements ServiceExtension 
         context.getMonitor().info(
                 "Europeana SQL schema statements registered successfully"
         );
-
-        // register the AssetService
-        var assetObservable = new AssetObservableImpl();
-        assetObservable.registerListener(new AssetEventListener(eventRouter));
-
-        var assetService = new EuropeanaAssetServiceImpl(sqlAssetIndex,
-                contractNegotiationStore,
-                transactionContext,
-                assetObservable,
-                new AssetQueryValidator(),
-                context.getMonitor());
-
-          context.registerService(AssetService.class, assetService);
-
-        context.getMonitor().info("Europeana Asset Service registered successfully"
-        );
     }
 
     private EuropeanaAssetStatements getDialect() {
         return new EuropeanaAssetStatements();
     }
+
+    @Provider
+    public EuropeanaSqlAssetIndex europeanaSqlAssetIndex() {
+        return sqlAssetIndex;
+    }
+
 }
