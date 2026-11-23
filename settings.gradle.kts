@@ -30,11 +30,9 @@ include(":tests:end2end")
 include(":extensions:signaling-auth-none")
 include(":extensions:jsonld-context-extension")
 include(":extensions:catalog-metadata-extension")
-include(":extensions:sql-schema-extension")
 
 // launcher modules
 include(":launchers:identity-hub")
 include(":launchers:controlplane")
 include(":launchers:dataplane")
 include(":launchers:issuerservice")
-include("extensions:europeana-dsp-common")

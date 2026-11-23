@@ -62,7 +62,6 @@ edc-spi-web = { module = "org.eclipse.edc:web-spi", version.ref = "edc" }
 edc-spi-dataplane = { module = "org.eclipse.edc:data-plane-spi", version.ref = "edc" }
 edc-spi-dataplane-selector = { module = "org.eclipse.edc:data-plane-selector-spi", version.ref = "edc" }
 edc-spi-dataplane-signaling = { module = "org.eclipse.edc:data-plane-signaling-spi", version.ref = "edc" }
-edc-asset-api = { module = "org.eclipse.edc:asset-api", version.ref = "edc" }
 
 # EDC lib dependencies
 edc-lib-jws2020 = { module = "org.eclipse.edc:jws2020-lib", version.ref = "edc" }
@@ -70,7 +69,6 @@ edc-lib-transform = { module = "org.eclipse.edc:transform-lib", version.ref = "e
 edc-lib-crypto = { module = "org.eclipse.edc:crypto-common-lib", version.ref = "edc" }
 edc-lib-keys = { module = "org.eclipse.edc:keys-lib", version.ref = "edc" }
 edc-lib-jsonld = { module = "org.eclipse.edc:json-ld-lib", version.ref = "edc" }
-edc-json-ld-spi = { module = "org.eclipse.edc:json-ld-spi", version.ref = "edc" }
 edc-lib-http = { module = "org.eclipse.edc:http-lib", version.ref = "edc" }
 edc-lib-util = { module = "org.eclipse.edc:util-lib", version.ref = "edc" }
 edc-lib-token = { module = "org.eclipse.edc:token-lib", version.ref = "edc" }
@@ -78,8 +76,6 @@ edc-lib-sql = { module = "org.eclipse.edc:sql-lib", version.ref = "edc" }
 edc-lib-util-dataplane = { module = "org.eclipse.edc:data-plane-util", version.ref = "edc" }
 edc-lib-oauth2-authn = { module = "org.eclipse.edc:auth-authentication-oauth2-lib", version.ref = "edc" }
 edc-lib-oauth2-authz = { module = "org.eclipse.edc:auth-authorization-oauth2-lib", version.ref = "edc" }
-edc-api-lib = {module = "org.eclipse.edc:api-lib", version.ref = "edc" }
-edc-jersey-provider-lib = {module = "org.eclipse.edc:jersey-providers-lib", version.ref = "edc" }
 
 # EDC Postgres modules
 edc-sql-assetindex = { module = "org.eclipse.edc:asset-index-sql", version.ref = "edc" }
@@ -95,9 +91,6 @@ edc-sql-transactionlocal = { module = "org.eclipse.edc:transaction-local", versi
 edc-sql-dataplane-instancestore = { module = "org.eclipse.edc:data-plane-instance-store-sql", version.ref = "edc" }
 edc-store-participantcontext-config-sql = { module = "org.eclipse.edc:participantcontext-config-store-sql", version.ref = "edc" }
 edc-cel-store-sql = { module = "org.eclipse.edc:cel-store-sql", version.ref = "edc" }
-edc-sql-bootstrapper = {module = "org.eclipse.edc:sql-bootstrapper", version.ref ="edc" }
-edc-core-spi = { module = "org.eclipse.edc:core-spi", version.ref = "edc" }
-edc-transaction-datasource-spi = { module = "org.eclipse.edc:transaction-datasource-spi", version.ref = "edc" }
 
 # identityhub SPI modules
 edc-ih-spi-did = { module = "org.eclipse.edc:did-spi", version.ref = "edc" }

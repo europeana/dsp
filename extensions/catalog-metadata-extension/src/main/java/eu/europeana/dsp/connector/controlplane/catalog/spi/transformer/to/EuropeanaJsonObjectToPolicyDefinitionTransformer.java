@@ -56,6 +56,9 @@ public class EuropeanaJsonObjectToPolicyDefinitionTransformer extends AbstractJs
         if (policy == null) {
             return null;
         }
+//        else {
+//            builder.policy(policy);
+//        }
 
         var privateProperties = input.get(EDC_POLICY_DEFINITION_PRIVATE_PROPERTIES);
         if (privateProperties != null) {
@@ -93,6 +96,13 @@ public class EuropeanaJsonObjectToPolicyDefinitionTransformer extends AbstractJs
                     .build();
         }
         builder.policy(policy);
-        return builder.build();
+
+        var response = builder.build();
+        System.out.println("Processed privateProperties ===> "+ response.getPrivateProperties());
+        System.out.println(
+                "Policy extensibleProperties ===> "
+                        + response.getPolicy().getExtensibleProperties()
+        );
+        return response;
     }
 }

@@ -1,5 +1,6 @@
 package eu.europeana.dsp.connector.controlplane.catalog.spi;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
