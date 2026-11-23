@@ -1,0 +1,10 @@
+-- create database, user and grant permissions
+CREATE DATABASE keycloak_${ENVIRONMENT};
+    CREATE USER ${KC_DB_USER} WITH PASSWORD '${KC_DB_USER_PASS}';
+    GRANT ALL PRIVILEGES ON DATABASE keycloak_${ENVIRONMENT} TO ${KC_DB_USER};
+
+-- grant all permissions on public schema 
+\c keycloak_${ENVIRONMENT}
+    GRANT ALL ON SCHEMA public TO ${KC_DB_USER};
+    
+    

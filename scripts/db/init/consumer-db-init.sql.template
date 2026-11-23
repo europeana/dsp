@@ -1,0 +1,15 @@
+-- CONS controlplane db
+CREATE DATABASE consumer_controlplane_${ENVIRONMENT};
+    CREATE USER ${CONSUMER_DB_CP_USER} WITH PASSWORD '${CONSUMER_DB_CP_USER_PASS}';
+    GRANT ALL PRIVILEGES ON DATABASE consumer_controlplane_${ENVIRONMENT} TO ${CONSUMER_DB_CP_USER};
+    \c consumer_controlplane_${ENVIRONMENT}
+    GRANT ALL ON SCHEMA public TO  ${CONSUMER_DB_CP_USER};
+
+-- CONS dataplane db
+    CREATE DATABASE consumer_dataplane_${ENVIRONMENT};
+    CREATE USER ${CONSUMER_DB_DP_USER} WITH PASSWORD '${CONSUMER_DB_DP_USER_PASS}';
+    GRANT ALL PRIVILEGES ON DATABASE consumer_dataplane_${ENVIRONMENT} TO ${CONSUMER_DB_DP_USER};
+    \c consumer_dataplane_${ENVIRONMENT}
+    GRANT ALL ON SCHEMA public TO ${CONSUMER_DB_DP_USER};
+    
+    

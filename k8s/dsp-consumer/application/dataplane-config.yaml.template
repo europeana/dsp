@@ -37,7 +37,7 @@ data:
   web.http.proxy.path: "/api/proxy"
 
   edc.vault.hashicorp.url: "http://vault.consumer-${ENVIRONMENT}.svc.cluster.local:8200"
-  edc.vault.hashicorp.token: "root"
+  edc.vault.hashicorp.token: "$CONSUMER_VAULT_ROOT_TOKEN"
 
   JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044"
   #OTEL_EXPORTER_OTLP_ENDPOINT: "${ELASTIC_APM_SERVERS}"

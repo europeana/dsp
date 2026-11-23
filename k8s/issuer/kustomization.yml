@@ -19,3 +19,6 @@ resources:
   - application/issuerservice-config.yaml
   - application/issuerservice.yaml
   - application/issuerservice-seed-job.yaml
+ 
+
+    

@@ -1,0 +1,39 @@
+-- CONS identityhub db
+CREATE DATABASE consumer_identityhub_${ENVIRONMENT};
+    CREATE USER ${CONSUMER_DB_IH_USER} PASSWORD '${CONSUMER_DB_IH_USER_PASS}';
+    GRANT ALL PRIVILEGES ON DATABASE consumer_identityhub_${ENVIRONMENT} TO ${CONSUMER_DB_IH_USER};
+    \c consumer_identityhub_${ENVIRONMENT}
+    GRANT ALL ON SCHEMA public TO ${CONSUMER_DB_IH_USER};
+
+
+--- CONS Vault db
+CREATE DATABASE consumervault_${ENVIRONMENT};
+-- we use the same user for IH and VAULT
+--CREATE USER ${CONSUMER_DB_IH_USER} PASSWORD '${CONSUMER_DB_IH_USER_PASS}';
+  
+GRANT ALL PRIVILEGES ON DATABASE consumervault_${ENVIRONMENT} TO  ${CONSUMER_DB_IH_USER};
+
+\c consumervault_${ENVIRONMENT}
+GRANT ALL ON SCHEMA public TO  ${CONSUMER_DB_IH_USER};
+
+\c consumervault_${ENVIRONMENT} ${CONSUMER_DB_IH_USER}
+
+
+-- vault storage backend
+CREATE TABLE vault_kv_store (
+  parent_path TEXT COLLATE "C" NOT NULL,
+  path        TEXT COLLATE "C",
+  key         TEXT COLLATE "C",
+  value       BYTEA,
+  CONSTRAINT pkey PRIMARY KEY (path, key)
+);
+CREATE INDEX parent_path_idx ON vault_kv_store (parent_path);
+
+-- vault HAEnabled backend
+CREATE TABLE vault_ha_locks (
+  ha_key                                      TEXT COLLATE "C" NOT NULL,
+  ha_identity                                 TEXT COLLATE "C" NOT NULL,
+  ha_value                                    TEXT COLLATE "C",
+  valid_until                                 TIMESTAMP WITH TIME ZONE NOT NULL,
+  CONSTRAINT ha_key PRIMARY KEY (ha_key)
+);  
