@@ -1,0 +1,25 @@
+--- DROPING TABLES IN A DATBASE - GENERIC SCRIPT
+-- connect first to the database
+\c ${BD} ${DB_USER}
+-- use db pass for login:  ${DB_USER_PASS}
+-- creates the DROP tables statements
+SELECT 'DROP TABLE IF EXISTS "' || tablename || '" CASCADE;'  FROM pg_tables WHERE schemaname = 'public'
+
+-- KC DB
+--- Create Statements for DROPING ALL TABLES IN THE DATABASE: used for DB reinitialization
+-- connect first to the database
+\c keycloak_${ENVIRONMENT} ${KC_DB_USER}
+-- use pass: ${KC_DB_USER_PASS}
+-- create DROP tables statements
+SELECT 'DROP TABLE IF EXISTS "' || tablename || '" CASCADE;'  FROM pg_tables WHERE schemaname = 'public'
+
+
+-- PROVIDER IH
+--- DROPING TABLES IN A DATBASE
+-- connect first to the database
+\c provider_identityhub_${ENVIRONMENT} ${PROVIDER_DB_CP_USER}
+pass: $PROVIDER_DB_CP_USER_PASS
+
+-- creates the DROP tables statements
+SELECT 'DROP TABLE IF EXISTS "' || tablename || '" CASCADE;'  FROM pg_tables WHERE schemaname = 'public'
+
