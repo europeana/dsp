@@ -41,6 +41,8 @@ edc-controlplane-catalog = { module = "org.eclipse.edc:control-plane-catalog", v
 edc-controlplane-services = { module = "org.eclipse.edc:control-plane-aggregate-services", version.ref = "edc" }
 edc-api-management-config = { module = "org.eclipse.edc:management-api-configuration", version.ref = "edc" }
 edc-api-management = { module = "org.eclipse.edc:management-api", version.ref = "edc" }
+edc-api-management-lib = { module = "org.eclipse.edc:management-api-lib", version.ref = "edc" }
+
 edc-api-cel-v5 = {module = "org.eclipse.edc:cel-api-v5", version.ref= "edc"}
 edc-api-secrets = { module = "org.eclipse.edc:secrets-api", version.ref = "edc" }
 edc-api-observability = { module = "org.eclipse.edc:api-observability", version.ref = "edc" }

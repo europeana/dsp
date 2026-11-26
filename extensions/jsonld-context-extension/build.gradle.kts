@@ -19,4 +19,7 @@ plugins {
 dependencies {
     api(libs.edc.spi.boot)
     api(libs.edc.ext.jsonld)
+
+    implementation(project(":extensions:europeana-dsp-common"))
+
 }

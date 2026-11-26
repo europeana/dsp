@@ -19,6 +19,6 @@ plugins {
 dependencies {
     api(libs.edc.spi.boot)
     api(libs.edc.spi.catalog)
-
-
+    api(libs.edc.api.management.lib)
+    api(libs.edc.api.dsp.config)
 }

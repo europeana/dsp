@@ -14,7 +14,8 @@ import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 
 import java.util.Map;
 
-import static eu.europeana.dsp.connector.controlplane.catalog.spi.DspVocabulary.DSP_TRANSFORMER_CONTEXT_V_2025_1;
+import static org.eclipse.edc.api.management.ManagementApi.MANAGEMENT_API_CONTEXT;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DSP_TRANSFORMER_CONTEXT_V_2025_1;
 import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 
 @Extension(EuropeanaPolicyDefinitionTransformerExtension.NAME)
@@ -47,13 +48,13 @@ public class EuropeanaPolicyDefinitionTransformerExtension implements ServiceExt
          * </a>
          */
         transformerRegistry
-                .forContext("management-api")
+                .forContext(MANAGEMENT_API_CONTEXT)
                 .register(
                         new EuropeanaJsonObjectFromPolicyDefinitionTransformer(jsonFactory, typeManager, JSON_LD)
                 );
 
         transformerRegistry
-                .forContext("management-api")
+                .forContext(MANAGEMENT_API_CONTEXT)
                 .register(
                         new EuropeanaJsonObjectToPolicyDefinitionTransformer()
                 );

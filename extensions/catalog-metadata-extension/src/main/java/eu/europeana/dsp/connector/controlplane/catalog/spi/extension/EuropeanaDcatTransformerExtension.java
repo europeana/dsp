@@ -13,7 +13,8 @@ import org.eclipse.edc.transform.spi.TypeTransformerRegistry;
 
 import java.util.Map;
 
-import static eu.europeana.dsp.connector.controlplane.catalog.spi.DspVocabulary.DSP_TRANSFORMER_CONTEXT_V_2025_1;
+import static org.eclipse.edc.api.management.ManagementApi.MANAGEMENT_API_CONTEXT;
+import static org.eclipse.edc.protocol.dsp.spi.type.Dsp2025Constants.DSP_TRANSFORMER_CONTEXT_V_2025_1;
 import static org.eclipse.edc.spi.constants.CoreConstants.JSON_LD;
 
 /**
@@ -65,13 +66,13 @@ public class EuropeanaDcatTransformerExtension implements ServiceExtension {
         // Also registering in management-api transformer context. As we would need a JSON-to-Europeana
         // DCAT distribution transformer while doing Asset Transformation
         transformerRegistry
-                .forContext("management-api")
+                .forContext(MANAGEMENT_API_CONTEXT)
                 .register(
                         new JsonObjectToEuropeanaDcatDistributionTransformer()
                 );
 
         transformerRegistry
-                .forContext("management-api")
+                .forContext(MANAGEMENT_API_CONTEXT)
                 .register(
                         new JsonObjectFromEuropeanaDcatDistributionTransformer(jsonFactory, typeManager, JSON_LD )
                 );
