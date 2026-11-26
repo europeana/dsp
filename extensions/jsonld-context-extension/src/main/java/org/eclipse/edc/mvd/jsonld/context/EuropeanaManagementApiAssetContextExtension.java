@@ -8,6 +8,7 @@ import org.eclipse.edc.runtime.metamodel.annotation.Inject;
 import org.eclipse.edc.spi.system.ServiceExtension;
 import org.eclipse.edc.spi.system.ServiceExtensionContext;
 
+import static org.eclipse.edc.api.management.ManagementApi.MANAGEMENT_SCOPE;
 import static org.eclipse.edc.api.management.ManagementApi.MANAGEMENT_SCOPE_V4;
 
 /**
@@ -32,6 +33,9 @@ public class EuropeanaManagementApiAssetContextExtension implements ServiceExten
     @Override
     public void initialize(ServiceExtensionContext context) {
         jsonLd.registerContext(CONTEXT_URL, MANAGEMENT_SCOPE_V4);
-        context.getMonitor().info("Registered Europeana JSON-LD context for scope: " + MANAGEMENT_SCOPE_V4);
+        jsonLd.registerContext(CONTEXT_URL, MANAGEMENT_SCOPE);
+
+        context.getMonitor().info("Registered Europeana JSON-LD context for scope: [" +
+                MANAGEMENT_SCOPE_V4 + ", " + MANAGEMENT_SCOPE + "]");
     }
 }
